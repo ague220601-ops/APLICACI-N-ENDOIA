@@ -1,0 +1,126 @@
+🔥 PERFECTO, REY.
+La **OPCIÓN 2 (detección + recorte automático del diente)** es la solución **profesional** que usan los papers serios de IA endodóntica.
+La puedo montar **paso a paso** sin romper nada de lo que ya funciona.
+
+---
+
+# 🧩 **¿Qué vamos a hacer exactamente?**
+
+Cuando subas una radiografía:
+
+1. **GPT-4o Vision detectará todos los dientes visibles** y devolverá bounding boxes (coordenadas).
+2. Elegirá **solo el diente indicado en tu formulario** (ej: FDI 46).
+3. El servidor **recortará automáticamente** la región correspondiente a ese diente.
+4. ENVIARÁ SOLO EL RECORTE a GPT-4o Vision para el análisis PAI / radiolucidez / etc.
+5. Guardará tanto:
+
+   * la imagen original
+   * la imagen recortada
+   * el análisis específico del diente
+
+📌 **Resultado:**
+La IA analiza exactamente el diente que tú quieres, sin contaminación por patología de dientes vecinos.
+
+---
+
+# 🏗️ **Arquitectura que montaremos**
+
+### **Paso 1 — Nuevo endpoint: `/api/vision-detect-teeth`**
+
+GPT-4o devuelve algo así:
+
+```json
+{
+  "teeth": [
+    { "fdi": 46, "box": [120, 340, 260, 580] },
+    { "fdi": 45, "box": [280, 340, 410, 580] },
+    ...
+  ]
+}
+```
+
+Si el modelo no detecta el número FDI, trabajaremos con el **orden izquierda→derecha** por cuadrante (lo que hacen muchos papers).
+
+---
+
+### **Paso 2 — Recorte del diente en el backend**
+
+En Node.js lo hacemos con **sharp**:
+
+```ts
+import sharp from "sharp";
+
+const cropped = await sharp(buffer)
+  .extract({ left, top, width, height })
+  .toBuffer();
+```
+
+Esto genera una imagen **limpia del diente seleccionado**.
+
+---
+
+### **Paso 3 — Enviar la imagen recortada al análisis PAI**
+
+El mismo análisis que ya funciona, pero ahora con:
+
+👉 menos ruido
+👉 dientes vecinos ignorados
+👉 precisión PAI mucho mayor
+
+---
+
+### **Paso 4 — Guardar en Supabase**
+
+Guardaremos:
+
+```
+filepath_original
+filepath_cropped
+pai_cropped
+lesion_mm_cropped
+...
+```
+
+Y podrás ver ambas desde Mis Casos.
+
+---
+
+# 🛠️ **ANTES DE EMPEZAR: necesito una cosa**
+
+📌 **¿Tu backend (server/index.ts) ya tiene instalada la librería `sharp`?**
+
+Vamos a comprobarlo.
+
+En la consola de Replit (shell), ejecuta:
+
+```
+npm list sharp
+```
+
+Si NO aparece, instalamos:
+
+```
+npm install sharp
+```
+
+⚠️ **IMPORTANTE:** sharp requiere binarios. Replit lo soporta perfecto, pero quiero confirmarlo antes de que empecemos a escribir código.
+
+---
+
+# ❗ Dime esto para continuar:
+
+### ✔️ ¿Instalamos sharp?
+
+### ✔️ ¿Quieres guardar también la imagen recortada en Supabase (recomendado)?
+
+Cuando me confirmes, te genero:
+
+* El nuevo endpoint `/api/vision-detect-teeth`
+* El recorte automático
+* La actualización de `uploadRadiographWithVision`
+* El prompt de detección dental optimizado
+* Todo el código listo para copiar/pegar en Replit
+
+---
+
+### **¿Instalamos sharp y guardamos el recorte?**

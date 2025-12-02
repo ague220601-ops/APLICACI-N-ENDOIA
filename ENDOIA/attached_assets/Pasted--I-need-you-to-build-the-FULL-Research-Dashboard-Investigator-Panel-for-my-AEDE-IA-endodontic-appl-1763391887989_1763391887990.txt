@@ -1,0 +1,196 @@
+
+I need you to build the FULL Research Dashboard (Investigator Panel) for my AEDE-IA endodontic application (React + Vite + TypeScript).
+
+IMPORTANT CONTEXT (DO NOT IGNORE):
+	•	Authentication & Roles are already implemented via Firebase.
+	•	The Investigator role accesses route: /investigador
+	•	Data is stored in Google Sheets and retrieved via n8n Webhooks.
+	•	The new AEDE/ESE 2025 classification is ALREADY implemented in the project (do NOT create old terms like “irreversible pulpitis”).
+Reuse the pulpal & apical constant lists that already exist in the project.
+
+You must create a complete professional RESEARCH DASHBOARD with:
+
+⸻
+
+1) Fetching Research Data
+
+Create a new API helper:
+
+src/lib/api-investigador.ts
+
+It must:
+	•	Send a POST request to this endpoint:
+https://ague2206.app.n8n.cloud/webhook/clinico/mis-casos
+	•	With body:
+
+{
+  "clinicoEmail": "investigador"
+}
+
+(Backend recognizes this as “return ALL cases”.)
+	•	Return all rows from the CRF_Limpio sheet.
+
+⸻
+
+2) Create the Page
+
+Create new page:
+
+src/pages/Investigador/Dashboard.tsx
+
+And add route:
+
+<Route
+  path="/investigador"
+  element={
+    <ProtectedRoute allow={['investigador']}>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
+
+
+⸻
+
+3) UI Structure
+
+The dashboard must contain:
+
+A) KPI CARDS (top section)
+
+4 statistic cards:
+	1.	Total cases
+	2.	Validated cases (AEDE_pulpar_FINAL & AEDE_apical_FINAL not empty)
+	3.	Discrepancy cases (column “discrepancia” === TRUE)
+	4.	Completed follow-up cases (control_1m_exito, control_3m_exito, control_6m_exito all filled)
+
+Use responsive flexbox or grid.
+
+⸻
+
+B) Temporal Trend Chart
+
+Use a line chart (Chart.js or Recharts) with:
+	•	x-axis: months (last 12 months)
+	•	lines:
+	•	New cases per month
+	•	Validated cases per month
+	•	Follow-up reported per month
+
+⸻
+
+C) Pulpal Diagnosis Distribution (AEDE/ESE 2025)
+	•	Import existing pulpal classification constants from the project.
+	•	Produce a bar chart showing frequency of each pulpal category.
+
+⸻
+
+D) Apical Diagnosis Distribution
+	•	Same logic as pulpal chart.
+	•	Reuse AEDE/ESE 2025 constants already in code.
+
+⸻
+
+E) Sankey Diagram: Diagnosis → Treatment
+
+Create a Sankey diagram:
+	•	Node group A: pulpal + apical final dx (combined string)
+	•	Node group B: treatment performed (tto_realizado)
+	•	Show volume of flow.
+
+Use any React Sankey library (e.g., react-sankey or recharts Sankey).
+
+⸻
+
+F) IA vs Validators Concordance
+
+Using fields:
+	•	AEDE_pulpar_IA
+	•	AEDE_apical_IA
+	•	AEDE_pulpar_JEN
+	•	AEDE_apical_JEN
+	•	AEDE_pulpar_SEG
+	•	AEDE_apical_SEG
+	•	AEDE_pulpar_FINAL
+	•	AEDE_apical_FINAL
+
+Generate:
+	1.	Basic confusion matrices
+	2.	Percent agreement:
+	•	IA vs JEN
+	•	IA vs SEG
+	•	JEN vs SEG
+	3.	Basic Cohen’s Kappa:
+	•	Pulpar
+	•	Apical
+
+Implement:
+
+function computeKappa(observed: string[], predicted: string[]): number;
+
+
+⸻
+
+G) Follow-up Success Rates (1–3–6 months)
+
+Create bar charts or cards:
+	•	Success % at 1 month
+	•	Success % at 3 months
+	•	Success % at 6 months
+	•	Also output N cases per group.
+
+Source columns:
+	•	control_1m_exito
+	•	control_3m_exito
+	•	control_6m_exito
+
+⸻
+
+H) Tooth Heatmap (FDI system)
+
+Generate a heatmap:
+	•	X-axis: tooth numbers (11–48)
+	•	Color intensity: number of cases
+	•	Tooltip: count for tooth
+
+Use grid / heatmap library or custom CSS grid.
+
+⸻
+
+I) Data Quality Metrics
+
+Show:
+	•	% missing per variable
+	•	Which variables have the highest missing
+	•	% cases validated within 72h
+	•	% cases with notes
+
+Add a small table or cards.
+
+⸻
+
+J) Export Options
+
+Add two buttons:
+	•	Export CSV → download all dashboard data as CSV
+	•	Export PNG → screenshot of dashboard (use html2canvas or similar)
+
+⸻
+
+4) Page Layout & Style
+
+Use a clean, modern research style:
+	•	Section headers
+	•	Cards with shadow
+	•	Responsive layout
+	•	Works on mobile + desktop
+
+⸻
+
+5) DO NOT BREAK ANY EXISTING CLINICAL OR TUTOR FILES
+
+The dashboard is fully isolated in the Investigador folder.
+
+⸻
+
+END OF PROMPT

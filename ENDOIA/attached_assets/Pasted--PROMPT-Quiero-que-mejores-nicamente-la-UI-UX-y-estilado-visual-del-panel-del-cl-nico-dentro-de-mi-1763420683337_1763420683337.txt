@@ -1,0 +1,163 @@
+
+PROMPT:
+Quiero que mejores únicamente la UI/UX y estilado visual del panel del clínico dentro de mi proyecto React + Vite + TS + Tailwind.
+No modifiques lógica, datos, ni rutas. Solo apariencia y distribución.
+
+Objetivo: Diseño elegante tipo Apple Health / Apple Dashboard, limpio, minimalista, moderno y consistente.
+
+⸻
+
+🔵 1. Unificación estética general
+
+Aplique estos estándares en TODAS las cards, contenedores, secciones y elementos del Panel del Clínico:
+	•	Shadow uniforme: shadow-lg shadow-black/10
+	•	Bordes: rounded-xl
+	•	Fondo:
+	•	modo oscuro → bg-zinc-900/60 backdrop-blur-xl
+	•	modo claro → bg-white/60 backdrop-blur-xl
+	•	Espaciado consistente entre secciones:
+	•	contenedores space-y-10
+	•	grupos internos space-y-6
+	•	Títulos uniformes:
+	•	sección → text-2xl font-semibold tracking-tight
+	•	subsección → text-lg font-semibold
+	•	Iconos con estilo minimalista de lucide-react.
+
+⸻
+
+🔵 2. Mejorar las tarjetas de estadísticas principales
+
+En el panel clínico (Total Casos, Validaciones, Seguimientos Pendientes, Éxito Global):
+	•	Crear un grid 4 columnas responsive con tarjetas elegantes.
+	•	Cada tarjeta debe tener:
+	•	número grande text-4xl font-bold
+	•	título text-sm text-zinc-400
+	•	icono suave con opacidad baja en esquina superior derecha
+	•	animación on-load tipo fade-in + slight-scale (transition-all duration-500 ease-out)
+	•	Paleta elegante:
+	•	Azul suave → info
+	•	Verde suave → éxito
+	•	Amarillo suave → pendientes
+	•	Malva suave → progreso
+(no colores chillones)
+
+⸻
+
+🔵 3. Gráficos elegantes tipo Apple
+
+Para todos los charts del clínico:
+	•	Usar la MISMA paleta profesional:
+	•	Azul #3A7AFE
+	•	Verde #2ECC71
+	•	Naranja #F5A623
+	•	Malva #B983FF
+	•	Gris #A6A6A6
+	•	Líneas más gruesas y suaves.
+	•	Animación on-load.
+	•	Labels con tipografía más pequeña y elegante.
+	•	Tarjeta del gráfico con sombra suave + borde redondeado.
+
+⸻
+
+🔵 4. Donut chart del diagnóstico pulpar IA (muy importante)
+
+Refina:
+	•	Bordes más gruesos para el donut para estilo moderno.
+	•	Etiquetas limpias y legibles.
+	•	Título elegante.
+	•	Animación suave.
+	•	Paleta uniforme (usar la del punto 3).
+
+No modifiques los datos ni la clasificación. Solo la estética.
+
+⸻
+
+🔵 5. Revisar y embellecer “Historial de dientes tratados”
+
+Esto es vital para mejorar la impresión profesional.
+
+Para cada agrupación FDI:
+	•	Card con:
+	•	icono minimalista de diente (lucide-react: Tooth)
+	•	título FDI estilizado
+	•	número de casos (pequeño)
+	•	Dentro de cada caso:
+	•	fila con sombra al pasar el ratón (hover:bg-zinc-800/20)
+	•	ID del caso en tipografía monoespaciada
+	•	fecha en gris suave
+	•	pequeño “pill” elegante con el tratamiento realizado o estado
+	•	botón “ver detalles” minimalista (variant="ghost" + icono RightArrow)
+
+Hacerlo tipo accordion elegante, con transiciones.
+
+⸻
+
+🔵 6. Interactividad premium
+
+Aplicar:
+	•	fade-in global al cargar el panel
+	•	transición en hover sobre tarjetas
+	•	escala ligera en gráficos (scale-[1.01] hover:scale-[1.03])
+
+Sin exagerar, estilo Apple.
+
+⸻
+
+🔵 7. Navbar del clínico refinado
+	•	Fondo blur elegante (igual que cards)
+	•	Separador vertical fino entre botones
+	•	Iconos suaves
+	•	Estados hover limpios: subrayado minimalista
+
+⸻
+
+🔵 8. Etiquetas IA estilo “pill premium”
+
+Para los badges de diagnóstico IA y tratamiento propuesto:
+	•	pill redondeada tipo rounded-full px-3 py-1 text-sm
+	•	color suave según tipo
+	•	icono mini de IA (⚙️) en versión minimal
+	•	que no ocupen demasiado espacio
+
+⸻
+
+🔵 9. Mejorar tabla de casos registrados
+	•	Hacerla más “airy”: más espacio vertical.
+	•	Fondos alternos ultra suaves (zinc-800/10).
+	•	Cabecera con borde inferior elegante.
+	•	Botón “Ver detalles” más bonito.
+
+⸻
+
+🔵 10. NO modificar nada de lógica
+
+No cambies:
+	•	llamadas a n8n
+	•	nombres de casos
+	•	estructuras
+	•	rutas
+	•	roles
+	•	validaciones
+
+Solo código estético, componentes visuales y distribución.
+
+⸻
+
+🔵 IMPORTANTE
+
+No eliminar ningún campo ni funcionalidad existente.
+Solo mejorar estética, suavidad, coherencia, transiciones, estilo visual y UX moderna.
+
+⸻
+
+🎯 Resultado esperado
+
+Un Panel del Clínico:
+	•	elegante, uniforme y profesional
+	•	estilo “Apple Health”
+	•	tarjetas suaves
+	•	charts bonitos y consistentes
+	•	historial limpio y moderno
+	•	navegación fluida
+
+Sin alterar nada técnico.

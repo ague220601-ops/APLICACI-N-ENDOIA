@@ -1,0 +1,189 @@
+🔧 Sustituye tu función uploadRadiograph por esta:
+import { supabase } from "@/lib/supabase";
+import { analizarRadiografia } from "@/services/vision"; // la IA
+
+export async function uploadRadiograph(file, caseId, momento, tipo) {
+  const fileExt = file.name.split(".").pop();
+  const filePath = `${caseId}/${momento}-${Date.now()}.${fileExt}`;
+
+  // 1. Subir archivo
+  const { error: uploadError } = await supabase
+    .storage.from("radiographs")
+    .upload(filePath, file);
+
+  if (uploadError) throw uploadError;
+
+  // 2. URL firmada temporal para IA
+  const signed = await supabase.storage
+    .from("radiographs")
+    .createSignedUrl(filePath, 3600);
+
+  const signedUrl = signed.data.signedUrl;
+
+  // 3. IA analiza la RX
+  const ai = await analizarRadiografia(signedUrl);
+
+  // 4. Guardar en tabla radiographs
+  await supabase.from("radiographs").insert([
+    {
+      case_id: caseId,
+      filepath: filePath,
+      tipo,
+      momento,
+      fecha: new Date().toISOString().split("T")[0],
+      pai: ai.PAI,
+      lesion_mm: ai.diametro_lesion_mm,
+      healing: ai.healing
+    }
+  ]);
+
+  // 5. Guardar baseline / followup en tabla cases
+  if (momento === "baseline") {
+    await supabase
+      .from("cases")
+      .update({
+        vision_PAI_baseline: ai.PAI,
+        vision_lesion_diam_mm_baseline: ai.diametro_lesion_mm
+      })
+      .eq("case_id", caseId);
+  } else {
+    await supabase
+      .from("cases")
+      .update({
+        vision_PAI_followup: ai.PAI,
+        vision_lesion_diam_mm_followup: ai.diametro_lesion_mm
+      })
+      .eq("case_id", caseId);
+  }
+
+  return signedUrl;
+}
+
+
+Y la función IA:
+
+export async function analizarRadiografia(urlFirma) {
+  const prompt = `
+  Analiza la periapical y devuelve JSON:
+
+  {
+    "PAI": number,
+    "diametro_lesion_mm": number,
+    "lesion_presente": boolean,
+    "healing": "baseline" | "parcial" | "completa" | "fracaso"
+  }
+  `;
+
+  const res = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${import.meta.env.VITE_OPENAI_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-4.1",
+      input: [
+        { role: "system", content: prompt },
+        { role: "user", content: [{ type: "input_image", image_url: urlFirma }] }
+      ]
+    })
+  });
+
+  const json = await res.json();
+  return JSON.parse(json.output[0].content[0].text);
+}
+
+🟧 2) VISTA AMPLIADA AL HACER CLIC (MODAL)
+
+En ListaRadiografias.tsx:
+
+const [modalUrl, setModalUrl] = useState("");
+
+<img
+  src={url}
+  className="rounded shadow cursor-pointer"
+  onClick={() => setModalUrl(url)}
+/>
+
+{modalUrl && (
+  <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+       onClick={() => setModalUrl("")}>
+    <img src={modalUrl} className="max-h-[90vh] max-w-[90vw] rounded" />
+  </div>
+)}
+
+
+✔ Modal limpio
+✔ Se cierra al clicar
+✔ Fullscreen
+
+🟩 3) COMPARATIVA BASELINE VS CONTROL
+
+Añade este componente simple:
+
+function ComparativaRX({ baselineUrl, followupUrl }) {
+  return (
+    <div className="grid grid-cols-2 gap-4 mt-4">
+      <div>
+        <p className="text-center font-bold mb-2">Baseline</p>
+        <img src={baselineUrl} className="rounded shadow" />
+      </div>
+      <div>
+        <p className="text-center font-bold mb-2">Control</p>
+        <img src={followupUrl} className="rounded shadow" />
+      </div>
+    </div>
+  );
+}
+
+
+Mostrarlo así:
+
+{baseline && followup && (
+  <ComparativaRX
+    baselineUrl={baseline}
+    followupUrl={followup}
+  />
+)}
+
+
+🎯 Perfecto para ver evolución PAI + diámetro.
+
+🟦 4) BOTÓN “ABRIR EN VISOR DENTAL”
+
+Este es un botón que abre la RX en una pestaña limpia, sin UI.
+
+<button
+  onClick={() => window.open(url, "_blank")}
+  className="px-3 py-1 bg-blue-600 text-white rounded"
+>
+  Abrir en visor dental
+</button>
+
+
+✔ Se abre limpia
+✔ Full resolution
+✔ Ideal para JEN y SEG
+
+🟫 5) BLOQUEO PARA QUE SOLO TUTOR VEA LAS RX ANTES DE VALIDAR
+
+En cualquier componente donde muestres radiografías usa:
+
+import { useUser } from "@/context/AuthContext";
+
+const { role } = useUser();
+
+if (role !== "tutor_JEN" && role !== "tutor_SEG") {
+  return <p className="text-gray-500 italic">Radiografías ocultas hasta validación.</p>;
+}
+
+
+Si quieres ser más estricto:
+
+Clínico NO puede verlas antes del diagnóstico final
+
+Investigador SÍ (si tú decides)
+
+Puedes hacer:
+
+if (role === "clinico") return null;

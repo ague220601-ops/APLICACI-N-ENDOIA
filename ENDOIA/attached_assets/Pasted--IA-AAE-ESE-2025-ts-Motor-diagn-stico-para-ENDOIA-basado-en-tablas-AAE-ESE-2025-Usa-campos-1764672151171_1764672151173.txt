@@ -1,0 +1,462 @@
+// IA_AAE_ESE_2025.ts
+// Motor diagnóstico para ENDOIA basado en tablas AAE–ESE 2025
+// Usa campos reales de tu tabla `cases` + radiografía IA
+
+// -------------------- Tipos básicos --------------------
+
+export type PreviousTreatmentType =
+  | "none"
+  | "small_restoration"
+  | "deep_restoration"
+  | "vital_indirect_cap"
+  | "vital_direct_cap"
+  | "partial_pulpotomy"
+  | "full_pulpotomy"
+  | "previous_regenerative"
+  | "previously_initiated_rct"
+  | "previously_obturated_rct";
+
+export type PulpDiagnosis =
+  | "clinically_normal_pulp"
+  | "hypersensitive_pulp"
+  | "mild_pulpitis"
+  | "severe_pulpitis"
+  | "pulp_necrosis"
+  | "inconclusive_pulp_status"
+  | "previously_initiated_root_canal_treatment"
+  | "previously_obturated_root_canal"
+  | "previous_regenerative_endodontic_treatment";
+
+export type ApicalDiagnosis =
+  | "clinically_normal_apical_tissues"
+  | "apical_hypersensitivity"
+  | "localized_symptomatic_apical_periodontitis"
+  | "localized_asymptomatic_apical_periodontitis"
+  | "localized_apical_periodontitis_with_sinus_tract"
+  | "apical_periodontitis_with_systemic_involvement"
+  | "healing_apical_tissue"
+  | "inconclusive_apical_condition";
+
+export interface CaseData {
+  // Clínico
+  spontaneous_pain_yesno?: string | null; // "yes" | "no"
+  thermal_cold_response?: string | null; // "none" | "normal" | "increased" | "lingering" | etc.
+  lingering_pain_seconds?: string | number | null; // puede venir como texto
+  pain_to_heat?: string | null; // si lo tienes
+  percussion_pain_yesno?: string | null; // "yes" | "no"
+  apical_palpation_pain?: string | null; // "yes" | "no"
+  sinus_tract_present?: string | null; // "yes" | "no"
+  systemic_involvement?: string | null; // "yes" | "no"
+  depth_of_caries?: string | null; // "none"|"moderate"|"deep"|...
+  restoracion_profunda?: string | null; // si lo añades, "yes"/"no"
+  trauma_history?: string | null; // opcional
+  previous_treatment?: string | null; // valor del desplegable nuevo
+
+  // Radiografía (clínico/IA)
+  periapical_index_pai_1_5?: string | number | null;
+  radiolucency_yesno?: string | null; // "yes" | "no"
+  pdl_widening?: string | null; // "none" | "mild" | "moderate" | "severe"
+  lamina_dura_intact?: boolean | null;
+  vision_pai_baseline?: string | number | null;
+  vision_pai_followup?: string | number | null;
+  vision_lesion_diam_mm_baseline?: string | number | null;
+  vision_lesion_diam_mm_followup?: string | number | null;
+}
+
+export interface EndoDiagnosis {
+  pulpal: PulpDiagnosis;
+  apical: ApicalDiagnosis;
+  flags: string[]; // notas de coherencia / cosas a revisar
+}
+
+// -------------------- Helpers --------------------
+
+function isYes(v?: string | null): boolean {
+  if (!v) return false;
+  const t = v.toString().toLowerCase().trim();
+  return t === "yes" || t === "si" || t === "sí" || t === "true" || t === "1";
+}
+
+function toNumber(v?: string | number | null): number | null {
+  if (v === null || v === undefined || v === "") return null;
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function normalizePreviousTreatment(raw?: string | null): PreviousTreatmentType {
+  if (!raw) return "none";
+  const t = raw.toString().toLowerCase().trim();
+
+  if (t.includes("obtur") || t.includes("rct_completa") || t === "previously_obturated_rct") {
+    return "previously_obturated_rct";
+  }
+  if (t.includes("inici") || t === "previously_initiated_rct") {
+    return "previously_initiated_rct";
+  }
+  if (t.includes("regener") || t === "previous_regenerative") {
+    return "previous_regenerative";
+  }
+  if (t.includes("indirect") || t.includes("indirect_cap")) {
+    return "vital_indirect_cap";
+  }
+  if (t.includes("direct") || t.includes("direct_cap")) {
+    return "vital_direct_cap";
+  }
+  if (t.includes("parcial") || t.includes("partial_pulpotomy")) {
+    return "partial_pulpotomy";
+  }
+  if (t.includes("pulpotomía completa") || t.includes("full_pulpotomy") || t.includes("pulpotomia_completa")) {
+    return "full_pulpotomy";
+  }
+  if (t.includes("deep_rest") || t.includes("restauracion_profunda")) {
+    return "deep_restoration";
+  }
+  if (t.includes("small_rest") || t.includes("restauracion_peque")) {
+    return "small_restoration";
+  }
+
+  return "none";
+}
+
+function hasApicalRadiolucency(data: CaseData): boolean {
+  const pai = toNumber(data.periapical_index_pai_1_5);
+  const visionPai = toNumber(data.vision_pai_baseline);
+  if (isYes(data.radiolucency_yesno)) return true;
+  if (pai !== null && pai >= 3) return true;
+  if (visionPai !== null && visionPai >= 3) return true;
+  return false;
+}
+
+function pdlIsWidened(data: CaseData): boolean {
+  const pdl = (data.pdl_widening || "").toString().toLowerCase();
+  return pdl === "mild" || pdl === "moderate" || pdl === "severe";
+}
+
+// -------------------- Diagnóstico pulpar --------------------
+
+export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags: string[] } {
+  const flags: string[] = [];
+  const prev = normalizePreviousTreatment(data.previous_treatment);
+
+  const spontPain = isYes(data.spontaneous_pain_yesno);
+  const coldResp = (data.thermal_cold_response || "").toString().toLowerCase();
+  const linger = toNumber(data.lingering_pain_seconds);
+  const heatPain = isYes(data.pain_to_heat || null);
+  const percPain = isYes(data.percussion_pain_yesno);
+  const apicalPalp = isYes(data.apical_palpation_pain);
+  const hasSinus = isYes(data.sinus_tract_present);
+  const deepCaries =
+    (data.depth_of_caries || "")
+      .toString()
+      .toLowerCase()
+      .includes("deep") ||
+    (data.depth_of_caries || "")
+      .toString()
+      .toLowerCase()
+      .includes("extreme");
+  const restProfunda = isYes(data.restauracion_profunda);
+  const trauma = isYes(data.trauma_history);
+
+  const noColdResponse =
+    coldResp === "none" ||
+    coldResp === "ausente" ||
+    coldResp === "no_response" ||
+    (coldResp === "" && linger === null && !spontPain && !percPain && !apicalPalp); // muy conservador
+
+  const hasApicalRad = hasApicalRadiolucency(data);
+
+  // ---- 1. Casos de "pulp space" con tratamiento previo (tablas AAE–ESE 2025) ----
+
+  if (prev === "previously_obturated_rct") {
+    // RCT completa
+    return {
+      diagnosis: "previously_obturated_root_canal",
+      flags,
+    };
+  }
+
+  if (prev === "previously_initiated_rct") {
+    // Tratamiento de conductos iniciado
+    return {
+      diagnosis: "previously_initiated_root_canal_treatment",
+      flags,
+    };
+  }
+
+  if (prev === "previous_regenerative") {
+    // Tratamiento regenerativo previo
+    return {
+      diagnosis: "previous_regenerative_endodontic_treatment",
+      flags,
+    };
+  }
+
+  // En VPT la pulpa sigue siendo vital, pero las pruebas pueden ser menos fiables.
+  const hasVPT =
+    prev === "vital_indirect_cap" ||
+    prev === "vital_direct_cap" ||
+    prev === "partial_pulpotomy" ||
+    prev === "full_pulpotomy";
+
+  // ---- 2. PULP NECROSIS (solo si no hay RCT completa) ----
+
+  const necrosisSupport =
+    percPain || apicalPalp || hasApicalRad || hasSinus || spontPain;
+
+  if (noColdResponse && necrosisSupport && !hasVPT) {
+    // En dientes vitales sin VPT, ausencia de frío + signos apicales / dolor = necrosis
+    return {
+      diagnosis: "pulp_necrosis",
+      flags,
+    };
+  }
+
+  if (noColdResponse && hasVPT && (percPain || apicalPalp || hasApicalRad || hasSinus)) {
+    // Fracaso de VPT con signos claros
+    flags.push("Posible fracaso de terapia pulpar vital previa.");
+    return {
+      diagnosis: "pulp_necrosis",
+      flags,
+    };
+  }
+
+  // Ausencia de frío sin síntomas ni radiolucencia → estado inconcluso (post-trauma, calcificación, restauración profunda, VPT, etc.)
+  if (noColdResponse && !necrosisSupport) {
+    if (restProfunda || hasVPT || trauma) {
+      flags.push(
+        "Ausencia de respuesta al frío con restauración profunda / VPT / trauma y sin signos apicales: estado pulpar inconcluso."
+      );
+      return {
+        diagnosis: "inconclusive_pulp_status",
+        flags,
+      };
+    }
+  }
+
+  // ---- 3. SEVERE PULPITIS ----
+
+  const prolongedCold = linger !== null && linger > 5;
+  const moderateCold = linger !== null && linger > 2 && linger <= 5;
+
+  if (
+    spontPain ||
+    heatPain ||
+    prolongedCold ||
+    (deepCaries && (spontPain || prolongedCold))
+  ) {
+    return {
+      diagnosis: "severe_pulpitis",
+      flags,
+    };
+  }
+
+  // ---- 4. MILD PULPITIS ----
+
+  if (
+    !spontPain &&
+    (coldResp === "increased" ||
+      coldResp === "aumentada" ||
+      moderateCold ||
+      (deepCaries && linger !== null && linger <= 5)) &&
+    !noColdResponse
+  ) {
+    return {
+      diagnosis: "mild_pulpitis",
+      flags,
+    };
+  }
+
+  // ---- 5. HYPERSENSITIVE PULP ----
+
+  const smallRest =
+    prev === "small_restoration" ||
+    (!deepCaries && !restProfunda && (coldResp === "increased" || moderateCold));
+
+  if (!spontPain && smallRest && !percPain && !apicalPalp && !hasApicalRad) {
+    return {
+      diagnosis: "hypersensitive_pulp",
+      flags,
+    };
+  }
+
+  // ---- 6. CLINICALLY NORMAL PULP ----
+
+  const normalCold =
+    coldResp === "normal" ||
+    coldResp === "" ||
+    (linger !== null && linger <= 2);
+
+  if (
+    normalCold &&
+    !spontPain &&
+    !percPain &&
+    !apicalPalp &&
+    !hasApicalRad &&
+    !hasSinus
+  ) {
+    return {
+      diagnosis: "clinically_normal_pulp",
+      flags,
+    };
+  }
+
+  // ---- 7. SI NADA ENCAJA CLARO → INCONCLUSIVE ----
+
+  flags.push("Criterios insuficientes para un diagnóstico pulpar claro.");
+  return {
+    diagnosis: "inconclusive_pulp_status",
+    flags,
+  };
+}
+
+// -------------------- Diagnóstico apical --------------------
+
+export function diagnoseApical(data: CaseData, pulpDiag: PulpDiagnosis): { diagnosis: ApicalDiagnosis; flags: string[] } {
+  const flags: string[] = [];
+
+  const percPain = isYes(data.percussion_pain_yesno);
+  const apicalPalp = isYes(data.apical_palpation_pain);
+  const hasSinus = isYes(data.sinus_tract_present);
+  const systemic = isYes(data.systemic_involvement);
+  const hasApicalRad = hasApicalRadiolucency(data);
+  const pdlWidened = pdlIsWidened(data);
+
+  const paiBase = toNumber(data.vision_pai_baseline);
+  const paiFollow = toNumber(data.vision_pai_followup);
+  const diamBase = toNumber(data.vision_lesion_diam_mm_baseline);
+  const diamFollow = toNumber(data.vision_lesion_diam_mm_followup);
+
+  const prev = normalizePreviousTreatment(data.previous_treatment);
+  const isPreviouslyTreated =
+    prev === "previously_obturated_rct" || prev === "previous_regenerative";
+
+  // ---- 1. Apical periodontitis with systemic involvement ----
+
+  if (systemic && (percPain || apicalPalp || hasApicalRad)) {
+    return {
+      diagnosis: "apical_periodontitis_with_systemic_involvement",
+      flags,
+    };
+  }
+
+  // ---- 2. Localized apical periodontitis with sinus tract ----
+
+  if (hasSinus) {
+    return {
+      diagnosis: "localized_apical_periodontitis_with_sinus_tract",
+      flags,
+    };
+  }
+
+  // ---- 3. Localized symptomatic apical periodontitis ----
+
+  if ((percPain || apicalPalp) && (hasApicalRad || pdlWidened)) {
+    return {
+      diagnosis: "localized_symptomatic_apical_periodontitis",
+      flags,
+    };
+  }
+
+  // ---- 4. Localized asymptomatic apical periodontitis ----
+
+  if (!percPain && !apicalPalp && hasApicalRad) {
+    return {
+      diagnosis: "localized_asymptomatic_apical_periodontitis",
+      flags,
+    };
+  }
+
+  // ---- 5. Apical hypersensitivity ----
+
+  const pulpNormalOrHyper =
+    pulpDiag === "clinically_normal_pulp" || pulpDiag === "hypersensitive_pulp";
+
+  if ((percPain || apicalPalp) && !hasApicalRad && !pdlWidened && pulpNormalOrHyper) {
+    return {
+      diagnosis: "apical_hypersensitivity",
+      flags,
+    };
+  }
+
+  // ---- 6. Healing apical tissue (comparando baseline vs follow-up) ----
+
+  if (
+    isPreviouslyTreated &&
+    !percPain &&
+    !apicalPalp &&
+    paiBase !== null &&
+    paiFollow !== null &&
+    paiFollow < paiBase
+  ) {
+    return {
+      diagnosis: "healing_apical_tissue",
+      flags,
+    };
+  }
+
+  if (
+    isPreviouslyTreated &&
+    !percPain &&
+    !apicalPalp &&
+    diamBase !== null &&
+    diamFollow !== null &&
+    diamFollow < diamBase
+  ) {
+    return {
+      diagnosis: "healing_apical_tissue",
+      flags,
+    };
+  }
+
+  // ---- 7. Clinically normal apical tissues ----
+
+  if (!percPain && !apicalPalp && !hasApicalRad && !pdlWidened && !hasSinus && !systemic) {
+    return {
+      diagnosis: "clinically_normal_apical_tissues",
+      flags,
+    };
+  }
+
+  // ---- 8. Inconclusive apical condition ----
+
+  flags.push("Condición apical radiográficamente dudosa o estable; sugerir seguimiento.");
+  return {
+    diagnosis: "inconclusive_apical_condition",
+    flags,
+  };
+}
+
+// -------------------- Diagnóstico combinado --------------------
+
+export function diagnoseEndoAAE_ESE_2025(data: CaseData): EndoDiagnosis {
+  const pulp = diagnosePulp(data);
+  const apical = diagnoseApical(data, pulp.diagnosis);
+  const flags: string[] = [...pulp.flags, ...apical.flags];
+
+  // Coherencia básica pulpa–ápice:
+  if (
+    (pulp.diagnosis === "clinically_normal_pulp" ||
+      pulp.diagnosis === "hypersensitive_pulp") &&
+    (apical.diagnosis === "localized_symptomatic_apical_periodontitis" ||
+      apical.diagnosis === "localized_asymptomatic_apical_periodontitis" ||
+      apical.diagnosis === "localized_apical_periodontitis_with_sinus_tract")
+  ) {
+    flags.push(
+      "Discordancia pulpa–ápice: pulpa clínicamente normal / hipersensible con periodontitis apical localizada. Revisar posible causa no endodóntica."
+    );
+  }
+
+  if (
+    pulp.diagnosis === "previously_obturated_root_canal" &&
+    (apical.diagnosis === "clinically_normal_apical_tissues" ||
+      apical.diagnosis === "inconclusive_apical_condition")
+  ) {
+    flags.push("Diente con endodoncia previa: considerar estado de curación a largo plazo.");
+  }
+
+  return {
+    pulpal: pulp.diagnosis,
+    apical: apical.diagnosis,
+    flags,
+  };
+}

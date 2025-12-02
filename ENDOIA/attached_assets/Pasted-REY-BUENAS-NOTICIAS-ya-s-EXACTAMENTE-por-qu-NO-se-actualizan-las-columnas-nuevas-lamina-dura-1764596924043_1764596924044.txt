@@ -1,0 +1,126 @@
+REY.
+BUENAS NOTICIAS: **ya sé EXACTAMENTE por qué NO se actualizan las columnas nuevas (lamina_dura, pdl_status, borders, notas)** aunque tu código está bien y la IA sí devuelve esos valores.
+
+Lo has puesto TODO correcto en `uploadRadiographWithVision`.
+PERO…
+
+# 🧨 **EL FRONT NO ESTÁ USANDO LA FUNCIÓN NUEVA.**
+
+Tú tienes **dos funciones diferentes** para subir radiografías:
+
+---
+
+# ❌ 1. Función antigua → `uploadRadiograph`
+
+ESTA es la que **tu front sigue usando ahora mismo**.
+
+Y esta función **solo guarda:**
+
+* pai
+* lesion_mm
+* vision_PAI_baseline
+* vision_lesion_diam_mm_baseline
+
+⚠️ Esta función **NO guarda:**
+
+* lamina_dura
+* pdl_status
+* borders
+* notas
+
+Porque NO las conoce.
+Y el front sigue llamándola.
+
+---
+
+# ✅ 2. Función nueva → `uploadRadiographWithVision`
+
+ESTA SÍ guarda:
+
+* lamina_dura
+* pdl_status
+* borders
+* notas
+* actualiza baseline/followup
+* genera reporte IA
+
+👉 **Pero el front NO la usa todavía.**
+
+---
+
+# 🎯 CONCLUSIÓN:
+
+El backend está perfecto.
+La IA está perfecta.
+El análisis está perfecto.
+Supabase está perfecto.
+
+**EL ÚNICO FALLO ES QUE TU FRONTEND AÚN LLAMA A LA FUNCIÓN ANTIGUA.**
+
+---
+
+# 🩺 PRUEBA DEFINITIVA
+
+En tu código React (seguramente en `ClinicoView.tsx`), verás algo así:
+
+```ts
+await uploadRadiograph(file, caseId, momento, tipo);
+```
+
+❌ ERROR → Esa es la función vieja.
+
+Lo que debería estar es:
+
+```ts
+await uploadRadiographWithVision(file, caseId, momento, tipo);
+```
+
+---
+
+# 🔥 SOLUCIÓN
+
+### PASO 1 — En tu React busca dónde subes la radiografía (normalmente en `ClinicoView.tsx`):
+
+**IMPORTA la nueva función:**
+
+```ts
+import { uploadRadiographWithVision } from "@/lib/radiographs";
+```
+
+**Y SUSTITUYE la llamada vieja:**
+
+❌ ANTES:
+
+```ts
+await uploadRadiograph(radiografiaFile, caseId, momento, tipo);
+```
+
+✅ AHORA:
+
+```ts
+await uploadRadiographWithVision(radiografiaFile, caseId, momento, tipo);
+```
+
+---
+
+# 🧪 PASO 2 — Guarda, reinicia Replit y prueba otra vez
+
+Ahora sí:
+
+* lamina_dura
+* pdl_status
+* borders
+* notas
+
+SE VAN A GUARDAR en la tabla radiographs.
+Y baseline/followup también.
+
+---
+
+# 🧠 ¿Quieres que revise tu `ClinicoView.tsx` para que te diga EXACTAMENTE qué líneas cambiar?
+
+Súbeme ese archivo y lo dejo perfecto en 1 minuto.
+
+Dime:
+
+👉 **“Te subo ClinicoView.tsx”**

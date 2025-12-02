@@ -1,0 +1,235 @@
+📦 BLOQUE 1 — TRAUMATOLOGÍA DENTAL (PRO EXTENDIDA)
+
+Basado en IADT 2020, AAOMR, AAE trauma guidance.
+
+Este bloque es MUY largo y MUY clínico, así que aquí tienes:
+
+⸻
+
+🧠 1. Conceptos Generales del Trauma (IADT 2020)
+
+🌡️ Evaluación inicial obligatoria
+	1.	Historia completa del suceso
+	•	Tiempo desde el trauma (clave p/ pronóstico)
+	•	Mecanismo (impacto directo, indirecto, objeto romo, caída…)
+	•	Velocidad del golpe
+	•	Medio donde ocurrió (suelo, piscina, bicicleta, deporte)
+	2.	Evaluación extraoral
+	•	Heridas faciales
+	•	Contusiones
+	•	Trismus
+	•	Asimetría facial
+	•	Fracturas mandibulares posibles
+	•	Lesiones de tejidos blandos (labio y mucosa — buscar fragmentos dentales)
+	3.	Evaluación intraoral
+	•	Sangrado
+	•	Movilidad
+	•	Cambios de color
+	•	Sensibilidad
+	•	Puntos de fractura
+	•	Mucosa desgarrada
+	•	En el labio: palpar fragmentos dentales incrustados → muy frecuente y muchas veces olvidado.
+	4.	Radiografías recomendadas
+	•	PA periapical
+	•	Lateral excéntrica
+	•	Oclusal
+	•	CBCT (solo si sospecha: fractura radicular, intrusión, reabsorción inicial o luxación severa)
+
+⸻
+
+🦷 2. Clasificación IADT Completa (2020)
+
+Con detalles PRO.
+
+2.1. Lesiones de tejidos duros y pulpa
+	1.	Fractura de esmalte
+	2.	Fractura esmalte-dentina sin exposición pulpar
+	3.	Fractura esmalte-dentina con exposición pulpar (pulp exposure)
+	•	Exp. pin-point <1 mm
+	•	Exp. amplia
+	4.	Fractura coronorradicular
+	•	Con/sin exposición pulpar
+	5.	Fractura radicular
+	•	Tercio apical
+	•	Medio
+	•	Cervical
+
+⸻
+
+2.2. Lesiones de tejidos periodontales
+	1.	Conmoción (concussion): sensibilidad sin movilidad
+	2.	Subluxación: movilidad ligera sin desplazamiento
+	3.	Luxación extrusiva
+	4.	Luxación lateral
+	5.	Luxación intrusiva
+	6.	Avulsión
+
+⸻
+
+⚕️ 3. Algoritmos de manejo (super detallados)
+
+3.1. Manejo de fracturas (árbol clínico real)
+
+A. Fracturas sin exposición pulpar
+	•	Esquema IADT:
+	•	Sellado inmediato de dentina expuesta
+	•	Control a 6–8 semanas, 6 meses, 1 año
+
+B. Fracturas con exposición pulpar
+	•	Decisión según edad / cierre apical y tamaño:
+	1.	Apex inmaduro (abierto)
+	•	Vital:
+	•	Direct pulp cap si exp. <24h
+	•	Partial pulpotomy (Cvek) si >24h
+	•	No vital: revascularización → primera elección
+	2.	Apex cerrado
+	•	Pulp cap si exp. pequeña <1 mm
+	•	Pulpotomía parcial si exp. reciente
+	•	Endodoncia si exposición grande/contaminada
+
+C. Fractura coronorradicular
+	•	Retirar fragmento → valorar restaurabilidad
+	•	Si pulpa expuesta → pulpotomía parcial o endodoncia
+	•	Si afecta subgingival → ortodoncia/quirúrgico para exposición del margen
+
+D. Fractura radicular
+	•	Mejor pronóstico: tercio apical
+	•	Tratamiento:
+	•	Reposición si desplazado
+	•	Ferulización 4 semanas
+	•	Vitalidad → seguimiento
+	•	Si necrosis → tratamiento solo del segmento coronal
+
+⸻
+
+🚑 4. Luxaciones: Manejo profesional completo (IADT + AAE)
+
+4.1. Conmoción
+	•	No hay desplazamiento
+	•	Tratamiento:
+	•	Sin ferulización
+	•	Control 4 semanas, 6 meses, 1 año
+
+4.2. Subluxación
+	•	Movilidad ligera
+	•	Ferulización flexible 2 semanas
+
+4.3. Extrusión
+	•	Reposición inmediata
+	•	Ferulización flexible 2 semanas
+	•	Apex cerrado: alto riesgo de necrosis → control vitalidad
+	•	Apex abierto: probabilidad de revascularización
+
+4.4. Luxación lateral
+	•	Desplazamiento con fractura ósea
+	•	Reposición forzada
+	•	Ferulización flexible 4 semanas
+
+4.5. Intrusión
+	•	El trauma más grave.
+
+Decisión según apex:
+	•	Apex abierto (<17 años):
+	•	Intrusión <3 mm: esperar erupción espontánea
+	•	3–7 mm: ortodoncia
+	•	7 mm: cirugía
+	•	Apex cerrado:
+	•	Reposición quirúrgica inmediata
+
+Riesgos:
+	•	Reabsorción inflamatoria
+	•	Reabsorción por reemplazo (anquilosis)
+
+→ Control radiológico muy estricto.
+
+⸻
+
+🆘 5. Avulsiones: Protocolo oficial (IADT 2020)
+
+El más exigente, lo dejamos perfecto.
+
+Tiempo extraoral:
+	•	< 60 min: mejor pronóstico
+	•	> 60 min: daño periodontal irreversible
+
+Si el diente está reimplantado antes de llegar a consulta:
+	•	Radiografía
+	•	No remover si está en buena posición
+	•	Ferulización 2 semanas
+	•	Lactente: no reimplantar
+	•	Profilaxis antibiótica según ADA
+
+Si NO está reimplantado:
+	1.	Agarrar por corona + lavar suavemente 10 s
+	2.	Reimplantar inmediatamente si el paciente lo permite
+	3.	Si no: leche fría, suero o saliva
+	4.	Revisar alveolo
+	5.	Reimplantar
+	6.	Ferulización 2 semanas
+	7.	Tetraciclina sistémica en adultos / penicilina alternativa
+
+⸻
+
+🔥 6. Reabsorciones (PRO EXTENDIDO — lo que pediste de Mercadé)
+
+6.1. Reabsorción inflamatoria
+
+Frecuente tras:
+	•	Avulsiones
+	•	Intrusiones
+	•	Luxaciones severas
+	•	Fracturas radiculares
+
+Prevención
+	•	Diagnóstico rápido
+	•	Control radiológico a 2, 4, 6 semanas
+	•	Tratamiento de conducto precoz si necrosis
+
+Tratamiento
+	•	Endodoncia inmediata con medicación intermedia
+	•	Hidróxido de calcio 2–4 semanas
+	•	Obturar cuando cesen signos reabsortivos
+
+⸻
+
+6.2. Reabsorción por reemplazo (anquilosis)
+
+Irreversible y muy frecuente en intrusiones.
+
+Adultos:
+	•	No hay tratamiento real → monitorizar
+
+Niños / adolescentes:
+	•	Decoronación si interfiere crecimiento alveolar
+
+⸻
+
+6.3. Reabsorción cervical invasiva
+
+Etiología: trauma, ortodoncia, blanqueamiento interno.
+
+Manejo:
+	•	Clasificación Heithersay
+	•	Tratamiento:
+	•	Acceso quirúrgico
+	•	Desbridamiento
+	•	TCA 90%
+	•	Restauración
+
+⸻
+
+🕒 7. Protocolos de seguimiento
+
+Según IADT:
+
+Tiempo	Qué revisar
+2 semanas	ferulización, síntomas
+4 semanas	radiografía si luxación
+6–8 semanas	vitalidad
+3 meses	comprobación reabsorciones
+6 meses	CBCT si dudas
+1 año	confirmar estabilidad
+Anual 5 años	trauma complejo
+
+
+⸻

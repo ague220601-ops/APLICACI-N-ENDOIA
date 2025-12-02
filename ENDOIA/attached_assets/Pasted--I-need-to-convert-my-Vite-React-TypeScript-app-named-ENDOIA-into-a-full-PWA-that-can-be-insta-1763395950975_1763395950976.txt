@@ -1,0 +1,167 @@
+
+I need to convert my Vite + React + TypeScript app (named ENDOIA) into a full PWA that can be installed on Android, iOS (Safari), Windows and macOS.
+
+Please implement exactly the following:
+
+⸻
+
+1) Install plugin
+
+Add (or check) the dependency:
+
+npm install vite-plugin-pwa --save-dev
+
+Modify vite.config.ts to include:
+
+import { VitePWA } from 'vite-plugin-pwa';
+
+plugins: [
+  react(),
+  VitePWA({
+    registerType: 'autoUpdate',
+    includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+    manifest: {
+      name: 'ENDOIA',
+      short_name: 'ENDOIA',
+      description: 'Herramienta de apoyo diagnóstico pulpar y apical.',
+      theme_color: '#0a84ff',
+      background_color: '#ffffff',
+      display: 'standalone',
+      start_url: '/',
+      icons: [
+        {
+          src: '/icons/icon-192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: '/icons/icon-512.png',
+          sizes: '512x512',
+          type: 'image/png'
+        },
+        {
+          src: '/icons/icon-512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any maskable'
+        }
+      ]
+    }
+  })
+]
+
+
+⸻
+
+2) Create folder /public/icons/
+
+Inside /public/icons/ generate these files:
+	•	icon-192.png
+	•	icon-512.png
+
+If they don’t exist, create simple placeholder PNG icons (blue tooth outline) so the app installs.
+I will replace them later.
+
+⸻
+
+3) Create or update service worker
+
+The plugin manages it automatically, but ensure:
+	•	service-worker.js or auto-generated sw is registered
+	•	caching strategy = default
+
+Add this at the root of your app (e.g., in main.tsx or App.tsx):
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+
+If the plugin generates sw.js under a different name, adjust path automatically.
+
+⸻
+
+4) Add PWA install prompt UI
+
+Add a small “Instalar ENDOIA” button in the navbar (visible only on supported devices).
+
+Create:
+
+src/components/PWAInstallButton.tsx
+
+With:
+
+import { useEffect, useState } from 'react';
+
+export default function PWAInstallButton() {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setVisible(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const install = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const result = await deferredPrompt.userChoice;
+    setDeferredPrompt(null);
+    setVisible(false);
+  };
+
+  if (!visible) return null;
+
+  return (
+    <button
+      onClick={install}
+      className="px-3 py-1 rounded bg-blue-600 text-white text-sm"
+    >
+      Instalar ENDOIA
+    </button>
+  );
+}
+
+Then include this in the Navbar.
+
+⸻
+
+5) iOS special support
+
+Add to index.html:
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<link rel="apple-touch-icon" href="/icons/icon-512.png" />
+
+
+⸻
+
+6) Build & Test
+
+Ensure that after running:
+
+npm run build
+
+You see:
+	•	manifest.webmanifest
+	•	sw.js
+	•	icons copied to /dist/icons/
+
+Then test on:
+	•	Chrome Android → should show “Install App”
+	•	Safari iPhone → share → “Add to Home Screen”
+
+⸻
+
+Make sure ALL code compiles, and do NOT modify any existing business logic in ENDOIA.
+
+⸻

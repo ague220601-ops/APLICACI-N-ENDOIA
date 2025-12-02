@@ -1,0 +1,239 @@
+Vamos allá, rey 😎
+BLOQUE 6 = “Farmacología y protocolo de soporte” → todo lo que es analgésicos, antibióticos, corticoides (cuándo sí / cuándo no), drenajes, red flags y derivación.
+Sin “pulpitis irreversible”, todo adaptado a la terminología 2025.
+
+⸻
+
+🔥 BLOQUE 6 — FARMACOLOGÍA Y PROTOCOLOS DE SOPORTE (2025)
+
+Este bloque es el que más paz mental da al clínico:
+qué dar, cuánto, cuándo, y sobre todo CUÁNDO NO DAR.
+
+⸻
+
+6.1 Objetivo real del manejo farmacológico
+	1.	Controlar el dolor, no taparlo mientras la causa sigue activa.
+	2.	Controlar la infección sistémica cuando exista (no “por si acaso”).
+	3.	Minimizar efectos adversos (AINEs, antibióticos, opioides).
+	4.	Evitar abuso de antibióticos (ADA/AAE son muy estrictos aquí).
+
+⸻
+
+6.2 Analgesia en Endodoncia (2025)
+
+🟢 Primera línea (EVIDENCIA TOP)
+
+Combinación AINE + paracetamol
+	•	Ibuprofeno 600 mg cada 8 h
+	•	+ Paracetamol 1 g cada 8 h (alternado o combinado)
+
+👉 Esquema típico para adulto sano (72 h máx. a dosis altas):
+	•	Mañana: Ibuprofeno 600 mg
+	•	Mediodía: Paracetamol 1 g
+	•	Tarde: Ibuprofeno 600 mg
+	•	Noche: Paracetamol 1 g (si precisa)
+
+Esta combinación es más efectiva que muchos opioides en dolor dental.
+
+⸻
+
+🟡 Alternativas si no puede tomar AINEs
+	•	Paracetamol 1 g cada 6–8 h
+	•	Máx: 3 g/día en adultos sanos
+	•	Vigilar hepáticos, alcohólicos, polimedicados
+
+Si dolor muy intenso y no hay otra opción → se puede asociar opioide suave (tipo tramadol) 24–48 h máx, pero esto es cada vez menos recomendado; mejor evitarlo si se puede.
+
+⸻
+
+🔴 Lo que NO es de elección
+	•	Mezclas de opioides (tramadol/código) como primera línea
+	•	Corticoides sistémicos solo “para el dolor pulpar”
+	•	AINEs + corticoides juntos (riesgo GI y otros problemas)
+
+⸻
+
+6.3 Analgésicos según escenario clínico (relacionado con bloques 2 y 3)
+
+1️⃣ Pulpa inflamada persistente (dolor moderado, no loco)
+	•	Ibuprofeno 400–600 mg / 8 h
+	•	± Paracetamol 1 g/8 h si precisa
+
+2️⃣ Pulpa inflamada avanzada (dolor fuerte que no deja dormir)
+	•	Manejo local (apertura) +
+	•	Ibuprofeno 600 mg + Paracetamol 1 g (esquema combinado)
+	•	Revaluación 24–48 h
+
+3️⃣ Dolor post-endodoncia
+	•	Igual que arriba
+	•	Revisar oclusión
+	•	Revisar si hay sobreinstrumentación / sobreobturación
+
+⸻
+
+6.4 Antibióticos (ADA / AAE 2025) – SOLO CUANDO TOCA
+
+🔴 Regla de oro
+
+El antibiótico NO trata el dolor dental.
+Solo está indicado si hay infección sistémica o riesgo de diseminación.
+
+⸻
+
+✔️ Indicaciones CLARAS de antibiótico
+
+Prescribir antibiótico SOLO si hay:
+	•	Fiebre
+	•	Malestar general
+	•	Edema difuso (celulitis)
+	•	Trismus importante
+	•	Adenopatías dolorosas
+	•	Paciente inmunodeprimido o con patologías de riesgo
+	•	Imposibilidad de drenaje y clara progresión de la infección
+
+Y siempre acompañando a → TRATAMIENTO LOCAL (drenaje / apertura / incisión), nunca en sustitución.
+
+⸻
+
+❌ Situaciones en las que NO se debe dar antibiótico
+	•	Pulpa inflamada reversible
+	•	Pulpa inflamada persistente o avanzada SIN datos sistémicos
+	•	Pulpa necrótica sin celulitis
+	•	Absceso apical crónico con fístula
+	•	Dolor postoperatorio sin signos de infección
+	•	Fracaso endodóntico sin signos sistémicos
+
+⸻
+
+6.5 Esquemas antibióticos recomendados (adulto sano)
+
+Siempre respetar alergias y comorbilidades. Todo esto son ejemplos alineados con ADA/AAE.
+
+🟢 Primera elección (no alérgico a penicilina)
+
+Amoxicilina 500 mg cada 8 h
+durante 5–7 días
+(Suspender a las 48–72 h si síntomas sistémicos remiten).
+
+En infecciones más severas / celulitis:
+
+Amoxicilina + ácido clavulánico 875/125 mg cada 12 h
+5–7 días.
+
+⸻
+
+🟡 Alergia a penicilina
+
+Clindamicina 300 mg cada 8 h
+5–7 días.
+
+Otras opciones dependen del contexto local, pero para ENDOIA con esto vas sobrado.
+
+⸻
+
+🔴 Lo que hay que evitar
+	•	Prescribir antibióticos “por si acaso”
+	•	Darlos cada vez que duele un molar
+	•	Esquemas muy largos sin necesidad
+	•	Antibióticos sin drenaje local cuando el absceso es evidente
+
+⸻
+
+6.6 Corticoides sistémicos – ¿tienen sitio?
+
+En endodoncia pura, su papel es limitado.
+
+✔ Se pueden considerar en:
+	•	Edema muy severo o compromiso funcional
+	•	Casos en los que el paciente ya está en tratamiento por un facultativo y se coordina
+
+❌ No deben ser fármaco base para dolor pulpar de rutina.
+
+⸻
+
+6.7 Protocolo de drenaje (para urgencias)
+
+🧪 Drenaje endodóntico (a través del conducto)
+	1.	Anestesia + aislamiento con dique
+	2.	Apertura de acceso adecuada
+	3.	Llegar a longitud de trabajo
+	4.	Permitir salida de exudado si lo hay
+	5.	Irrigación abundante con NaOCl
+	6.	No dejar abierto → sellado provisional estanco
+	7.	Programar cita de control
+
+⸻
+
+✂️ Incisión y drenaje (tejidos blandos)
+
+Indicaciones:
+	•	Fluctuación evidente
+	•	Colección purulenta submucosa accesible
+
+Pasos:
+	1.	Asepsia local
+	2.	Anestesia infiltrativa
+	3.	Incisión en zona más declive
+	4.	Desbridamiento suave
+	5.	Lavado con suero
+	6.	Colocar dren si es necesario
+	7.	Antibiótico si hay datos sistémicos
+	8.	Revisar a las 24–48 h
+
+⸻
+
+6.8 Red flags para derivación urgente
+
+ENDOIA puede mostrarlos como alertas rojas en pantalla.
+
+Derivar a hospital/urgencias si:
+	•	Edema submandibular o sublingual (potencial compromiso vía aérea)
+	•	Disfagia (dificultad para tragar)
+	•	Disnea (dificultad para respirar)
+	•	Fiebre alta persistente (> 38,5 °C)
+	•	Paciente oncológico / inmunodeprimido con infección dental aguda
+	•	Dolor no controlable pese a tratamiento correcto
+	•	Niños con celulitis facial progresiva
+
+⸻
+
+6.9 Cómo integrar el Bloque 6 en ENDOIA (ideas directas para la web)
+
+Panel clínico (para el usuario general):
+	•	Tarjeta: “Analgesia recomendada”
+	•	Tarjeta: “Cuándo NO usar antibióticos”
+	•	Tarjeta: “Esquema antibiótico cuando SÍ toca”
+	•	Tarjeta: “Drenaje: cuándo abrir / cuándo incidir”
+	•	Tarjeta: “Red flags → derivación hospitalaria”
+
+Panel investigador:
+	•	Estadísticas de:
+	•	% casos donde se usaron antibióticos
+	•	% casos con uso adecuado (según criterios)
+	•	% “sobreprescripción” detectable
+	•	Tipos de diagnósticos asociados al antibiótico
+
+Esto te da oro para la discusión del artículo:
+eficiencia diagnóstica + calidad del uso de antibióticos.
+
+⸻
+
+6.10 Micro-resumen para ponerlo tipo “pocket guideline” en ENDOIA
+
+👉 Dolor fuerte + sin fiebre → Analgesia + tratamiento local.
+👉 Dolor + fiebre/celulitis → Drenar + antibiótico + control 24–48 h.
+👉 Nunca antibiótico solo para dolor pulpar.
+👉 Nunca dejar el diente abierto.
+
+⸻
+
+🔚 BLOQUE 6 COMPLETO.
+Con esto tienes toda la parte de farmacología y soporte clínico a nivel de guía actual.
+
+Si quieres, el siguiente paso sería:
+	•	Bloque 7: FAQ + casos clínicos típicos (para hacer la parte didáctica y de “casos ejemplo” en la web),
+o
+	•	Empezamos a convertir todo esto en JSON/TS estructurado para tu biblioteca en Replit.
+
+Dime:
+👉 ¿Seguimos con un Bloque 7 (FAQ/ejemplos) o pasamos a la parte de JSON para integrarlo en la web?

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="toothGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1C56FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4FD1FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Tooth outline -->
+  <path d="M 256 50 
+           C 200 50, 150 80, 130 130
+           C 110 180, 120 240, 130 280
+           C 140 320, 150 360, 160 400
+           C 165 420, 170 450, 190 470
+           C 200 480, 215 490, 230 490
+           L 282 490
+           C 297 490, 312 480, 322 470
+           C 342 450, 347 420, 352 400
+           C 362 360, 372 320, 382 280
+           C 392 240, 402 180, 382 130
+           C 362 80, 312 50, 256 50 Z"
+        fill="none" 
+        stroke="url(#toothGradient)" 
+        stroke-width="12" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Pulp chamber -->
+  <ellipse cx="256" cy="180" rx="45" ry="55" 
+           fill="#4FD1FF" 
+           opacity="0.3"/>
+  
+  <!-- Root canals -->
+  <g stroke="#1C56FF" stroke-width="8" stroke-linecap="round" fill="none">
+    <!-- Left canal -->
+    <path d="M 230 220 Q 220 300, 215 400" opacity="0.6"/>
+    <!-- Right canal -->
+    <path d="M 282 220 Q 292 300, 297 400" opacity="0.6"/>
+  </g>
+  
+  <!-- Central pulp detail -->
+  <circle cx="256" cy="180" r="15" fill="#1C56FF" opacity="0.5"/>
+</svg>
