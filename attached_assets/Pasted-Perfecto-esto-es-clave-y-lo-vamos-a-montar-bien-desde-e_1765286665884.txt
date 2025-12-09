@@ -1,0 +1,114 @@
+Perfecto, esto es clave y lo vamos a montar bien desde el principio:
+
+🎯 OBJETIVO
+
+✔ El clínico debe ver la respuesta completa de Vision GPT asociada a cada radiografía.
+✔ Jeni, Segura y cualquier validador deben poder ver exactamente esos mismos datos cuando revisen un caso.
+✔ Debe aparecer dentro del caso, en su vista, en un bloque claro y separado:
+Datos radiográficos IA (VisionGPT)
+
+Vamos a hacerlo en 3 pasos rápidos, y al final te dejo el código listo para pegar.
+
+🟦 1) ¿Qué datos devuelve Vision GPT realmente?
+
+Basado en tu propio esquema, Vision GPT devuelve (mínimo):
+
+Baseline (inicial)
+
+vision_pai_baseline → PAI detectado por IA
+
+vision_lesion_diam_mm_baseline → diámetro lesión
+
+vision_radiolucency_detected → true/false
+
+vision_notes_baseline (si quieres lo añadimos)
+
+Follow-up
+
+vision_pai_followup
+
+vision_lesion_diam_mm_followup
+
+vision_radiolucency_detected_followup
+
+posibles notas
+
+Y todo eso ya lo guardas en Supabase (lo revisé en tu estructura).
+
+🟩 2) ¿Dónde deben verse?
+✔ En la vista del clínico (mis casos → detalle del caso)
+✔ En la vista de validación (vista de JEN / SEG / INV)
+
+Usas la misma estructura, solo cambiando permisos.
+
+Debemos añadir:
+
+Bloque nuevo:
+🧠 Análisis Radiográfico IA (Vision GPT)
+---------------------------------------
+PAI inicial: X
+PAI seguimiento: X
+Radiolucidez detectada: Sí/No
+Diámetro lesión inicial: X mm
+Diámetro lesión seguimiento: X mm
+Flags IA (si hay)
+Notas IA (si añadimos)
+
+🟧 3) CÓDIGO LISTO PARA PEGAR
+
+Esto va dentro del componente donde muestras un caso individual:
+
+🔵 Añade este bloque en tu componente CaseDetail.tsx (o como se llame)
+{/* BLOQUE DE IA RADIOLÓGICA */}
+<div style={{
+  background: "#f4f8ff",
+  padding: "15px",
+  borderRadius: "10px",
+  marginTop: "25px",
+  border: "1px solid #c3d5ff"
+}}>
+  <h3 style={{ color: "#004AAD", marginBottom: "10px" }}>
+    🧠 Análisis Radiográfico IA (Vision GPT)
+  </h3>
+
+  <p><strong>PAI inicial (IA):</strong> {caseData.vision_pai_baseline ?? "No disponible"}</p>
+  <p><strong>PAI seguimiento (IA):</strong> {caseData.vision_pai_followup ?? "No disponible"}</p>
+
+  <p><strong>Radiolucidez detectada:</strong> 
+    {caseData.vision_radiolucency_detected ? "Sí" : "No"}
+  </p>
+
+  <p><strong>Diámetro lesión (baseline):</strong> 
+    {caseData.vision_lesion_diam_mm_baseline 
+      ? `${caseData.vision_lesion_diam_mm_baseline} mm`
+      : "No disponible"}
+  </p>
+
+  <p><strong>Diámetro lesión (follow-up):</strong> 
+    {caseData.vision_lesion_diam_mm_followup 
+      ? `${caseData.vision_lesion_diam_mm_followup} mm`
+      : "No disponible"}
+  </p>
+
+  {caseData.IA_flags && caseData.IA_flags.length > 0 && (
+    <>
+      <h4 style={{ color: "#004AAD", marginTop: "15px" }}>⚠ Alertas IA</h4>
+      <ul>
+        {caseData.IA_flags.map((f, idx) => (
+          <li key={idx}>{f}</li>
+        ))}
+      </ul>
+    </>
+  )}
+</div>
+
+🟪 4) ¿Esto lo verán también Jeni y Segura?
+
+👉 Sí, automáticamente, mientras su página de revisión muestre caseData completo.
+
+Si ahora mismo su vista no carga todos los campos, solo debes asegurarte de que:
+
+supabase.from("cases").select("*")
+
+
+incluye esos campos.
