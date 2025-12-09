@@ -32,7 +32,12 @@ function generarCaseID(identificadorLocal = "") {
 export default function ClinicoView() {
   const { user } = useAuth();
   
-  const [form, setForm] = useState<CasoClinico>({
+  const [form, setForm] = useState<CasoClinico & {
+    tipo_dolor?: string;
+    sondaje_max_mm?: string;
+    camara_abierta?: string;
+    pulpa_expuesta?: string;
+  }>({
     case_id: "",
     tooth_fdi: "",
     dolorEspontaneo: "no",
@@ -40,8 +45,8 @@ export default function ClinicoView() {
     lingeringSeg: "",
     percusionDolor: "no",
     radiolucidezApical: "no",
-    profundidadCaries: "moderada",
-    sangradoControlable: "si",
+    profundidadCaries: "",
+    sangradoControlable: "",
     sinusTractPresent: "no",
     systemicInvolvement: "no",
     previousTreatment: "none",
@@ -50,6 +55,10 @@ export default function ClinicoView() {
     tratamientoRealizado: "no_realizado",
     clinicoNombre: "",
     clinicoEmail: "",
+    tipo_dolor: "",
+    sondaje_max_mm: "",
+    camara_abierta: "",
+    pulpa_expuesta: "",
   });
 
   useEffect(() => {
@@ -133,8 +142,15 @@ export default function ClinicoView() {
       thermal_cold_response: form.respuestaFrio === "0_no_responde" ? "0" 
         : form.respuestaFrio === "2_aumentada" ? "2" : "1",
       lingering_pain_seconds: form.lingeringSeg || "0",
-      depth_of_caries: form.profundidadCaries,
-      bleeding_control_possible: form.sangradoControlable === "si" ? "sí" : "no",
+      depth_of_caries: form.profundidadCaries || null,
+      bleeding_control_possible: form.sangradoControlable === "si" ? "sí" : form.sangradoControlable === "no" ? "no" : null,
+      
+      // Nuevos campos clínicos AAE-ESE 2025
+      tipo_dolor: form.tipo_dolor || null,
+      sondaje_max_mm: form.sondaje_max_mm ? Number(form.sondaje_max_mm) : null,
+      sangrado_controlable: form.sangradoControlable || null,
+      camara_abierta: form.camara_abierta || null,
+      pulpa_expuesta: form.pulpa_expuesta || null,
       
       // Campos radiográficos (estimados por el adaptador)
       periapical_index_PAI_1_5: form.radiolucidezApical === "si" 
@@ -327,35 +343,105 @@ export default function ClinicoView() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="profundidadCaries">Profundidad caries</Label>
+                <Label htmlFor="tipo_dolor">Tipo de dolor principal</Label>
                 <Select
-                  value={form.profundidadCaries}
-                  onValueChange={(value) => handleChange("profundidadCaries", value)}
+                  value={form.tipo_dolor || ""}
+                  onValueChange={(value) => handleChange("tipo_dolor", value)}
                 >
-                  <SelectTrigger id="profundidadCaries" data-testid="select-profundidad">
-                    <SelectValue />
+                  <SelectTrigger id="tipo_dolor" data-testid="select-tipo-dolor">
+                    <SelectValue placeholder="Selecciona una opción" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="superficial">Superficial</SelectItem>
-                    <SelectItem value="moderada">Moderada</SelectItem>
-                    <SelectItem value="profunda">Profunda</SelectItem>
-                    <SelectItem value="extrema">Extrema / Exposición pulpar</SelectItem>
+                    <SelectItem value="sin_dolor">Sin dolor</SelectItem>
+                    <SelectItem value="dolor_provocado_corto">Dolor provocado de corta duración</SelectItem>
+                    <SelectItem value="dolor_provocado_largo">Dolor provocado de larga duración</SelectItem>
+                    <SelectItem value="dolor_espontaneo">Dolor espontáneo</SelectItem>
+                    <SelectItem value="dolor_mal_localizado">Dolor mal localizado / irradiado</SelectItem>
+                    <SelectItem value="no_refiere">No refiere / no sabe describir</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="profundidadCaries">Profundidad caries</Label>
+                <Select
+                  value={form.profundidadCaries || ""}
+                  onValueChange={(value) => handleChange("profundidadCaries", value)}
+                >
+                  <SelectTrigger id="profundidadCaries" data-testid="select-profundidad">
+                    <SelectValue placeholder="Selecciona una opción" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="no_aplica">No aplica / diente ya tratado</SelectItem>
+                    <SelectItem value="no_refiere">No se puede determinar</SelectItem>
+                    <SelectItem value="esmaltaria">Esmaltaria</SelectItem>
+                    <SelectItem value="dentinaria_media">Dentinaria media</SelectItem>
+                    <SelectItem value="dentinaria_profunda">Dentinaria profunda</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sondaje_max_mm">Profundidad de sondaje máxima (mm)</Label>
+                <Input
+                  id="sondaje_max_mm"
+                  data-testid="input-sondaje"
+                  type="number"
+                  min="0"
+                  max="12"
+                  step="1"
+                  value={form.sondaje_max_mm || ""}
+                  onChange={(e) => handleChange("sondaje_max_mm", e.target.value)}
+                  placeholder="p.ej. 6"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="sangradoControlable">Sangrado controlable</Label>
                 <Select
-                  value={form.sangradoControlable}
+                  value={form.sangradoControlable || ""}
                   onValueChange={(value) => handleChange("sangradoControlable", value)}
                 >
                   <SelectTrigger id="sangradoControlable" data-testid="select-sangrado">
-                    <SelectValue />
+                    <SelectValue placeholder="Selecciona una opción" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="si">Sí</SelectItem>
-                    <SelectItem value="no">No / difícil</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                    <SelectItem value="no_valorable">No valorable</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="camara_abierta">¿Se abrió la cámara pulpar en esta cita?</Label>
+                <Select
+                  value={form.camara_abierta || ""}
+                  onValueChange={(value) => handleChange("camara_abierta", value)}
+                >
+                  <SelectTrigger id="camara_abierta" data-testid="select-camara">
+                    <SelectValue placeholder="Selecciona una opción" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="si">Sí</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pulpa_expuesta">Pulpa expuesta</Label>
+                <Select
+                  value={form.pulpa_expuesta || ""}
+                  onValueChange={(value) => handleChange("pulpa_expuesta", value)}
+                >
+                  <SelectTrigger id="pulpa_expuesta" data-testid="select-pulpa">
+                    <SelectValue placeholder="Selecciona una opción" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="si">Sí</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                    <SelectItem value="no_valorable">No valorable</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
