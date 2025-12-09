@@ -6,14 +6,19 @@ export const OPCIONES_PULPAR = [
   "Severe pulpitis",
   "Pulp necrosis",
   "Inconclusive pulp status",
+  "Previously initiated root canal treatment",
+  "Previously obturated root canal",
+  "Previous regenerative endodontic treatment",
 ] as const;
 
 export const OPCIONES_APICAL = [
   "Clinically normal apical tissues",
+  "Apical hypersensitivity",
   "Localized symptomatic apical periodontitis",
   "Localized asymptomatic apical periodontitis",
-  "Apical periodontitis with sinus tract",
+  "Localized apical periodontitis with sinus tract",
   "Apical periodontitis with systemic involvement",
+  "Healing apical tissue",
   "Inconclusive apical condition",
 ] as const;
 
