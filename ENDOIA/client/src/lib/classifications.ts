@@ -23,6 +23,7 @@ export type ApicalClassification = typeof OPCIONES_APICAL[number];
 // Helper: Mapeo de email de tutor a token de n8n
 const TUTOR_TOKEN_MAP: Record<string, string> = {
   "jennifer.endoia@gmail.com": "JEN_MARTIN_2025",
+  "jenifer.margon@gmail.com": "JEN_MARTIN_2025",
   "segura.endoia@gmail.com": "SEGURA_2025",
   "ague220601@gmail.com": "JEN_MARTIN_2025",
   "investigador.endoia@gmail.com": "INVESTIGADOR_2025",
