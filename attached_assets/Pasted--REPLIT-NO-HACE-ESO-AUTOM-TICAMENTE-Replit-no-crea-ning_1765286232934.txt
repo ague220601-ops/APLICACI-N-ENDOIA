@@ -1,0 +1,87 @@
+✅ REPLIT NO HACE ESO AUTOMÁTICAMENTE
+
+Replit no crea ninguna función wrapper y no enlaza automágicamente:
+
+tu formulario,
+
+con tu motor IA nuevo,
+
+con los nombres de salida que guardas en Supabase.
+
+Eso depende solo del archivo que tú tengas en /lib/IA_AAE_ESE.ts.
+
+🔎 ¿Qué es lo que “parece” que Replit hace?
+
+Replit te autocompleta lo que ya existe en tu proyecto, por eso tú ves:
+
+import { getDiagnosisAAE_ESE } from "../lib/IA_AAE_ESE";
+
+
+Pero eso no significa que Replit esté conectando nada internamente.
+Solo está importando lo que haya dentro de ese archivo.
+
+📌 Si tu getDiagnosisAAE_ESE() actual sigue con el código antiguo:
+❗ Tu formulario NO está usando el motor IA nuevo
+❗ Tus diagnósticos pueden estar saliendo del modelo viejo
+❗ Tus nombres de salida pueden no coincidir con Supabase
+✔ Qué tienes que hacer tú (pero es muy fácil)
+
+Solo asegúrate de que el archivo:
+
+/lib/IA_AAE_ESE.ts
+
+contiene ESTO:
+
+import { diagnoseEndoAAE_ESE_2025 } from "./IA_AAE_ESE_2025";
+
+export function getDiagnosisAAE_ESE(formData: any) {
+  const result = diagnoseEndoAAE_ESE_2025(formData);
+
+  return {
+    AEDE_pulpar_IA: result.pulpal,
+    AEDE_apical_IA: result.apical,
+    IA_flags: result.flags || [],
+  };
+}
+
+🔥 ¿Cómo comprobar si ya está bien sin mirar código?
+
+Haz este test rápido:
+
+En tu formulario, mete:
+
+previous_treatment = “previously_obturated_rct”
+
+thermal_cold_response = “0”
+
+lingering = “60”
+
+pain_to_heat = “sí”
+
+percussion_pain = “sí”
+
+Si al darle a “Enviar caso” te muestra:
+
+✔ AEDE_pulpar_IA: "previously_obturated_root_canal"
+
+→ está usando el motor nuevo
+→ tu wrapper está bien
+
+Si te pusiera:
+
+❌ AEDE_pulpar_IA: "pulp_necrosis"
+
+→ SIGUES usando el motor antiguo
+→ hay que actualizar getDiagnosisAAE_ESE()
+
+📌 Conclusión
+
+👉 Replit NO adapta tu IA automáticamente.
+👉 Debes actualizar tú el archivo IA_AAE_ESE.ts.
+👉 Si no lo haces, tu formulario seguirá usando el modelo antiguo aunque el archivo 2025 esté perfecto.
+
+Si quieres, pásame tu archivo actual:
+
+/lib/IA_AAE_ESE.ts
+
+y te digo en 10 segundos si está mal o está perfecto.
