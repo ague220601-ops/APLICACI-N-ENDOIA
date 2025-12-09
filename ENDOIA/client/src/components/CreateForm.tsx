@@ -24,6 +24,8 @@ export default function CreateForm() {
         ...formData, 
         ...dx,
         clinicoEmail: formData.clinico_correo,
+        probing_max_depth_mm: formData.sondaje_max_mm,
+        bleeding_control_possible: formData.sangrado_controlable,
         date: new Date().toISOString().split('T')[0]
       };
 
@@ -70,6 +72,9 @@ export default function CreateForm() {
         flexDirection: "column", 
         gap: "15px" 
       }}>
+
+        {/* ----------------------------- IDENTIFICACIÓN ----------------------------- */}
+
         <div>
           <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
             Identificador del caso *
@@ -103,25 +108,31 @@ export default function CreateForm() {
           </label>
           <input 
             name="tooth_fdi" 
-            placeholder="Ej: 36" 
+            placeholder="Ej: 26" 
             onChange={handleChange} 
             required 
             style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
           />
         </div>
 
+        {/* ------------------------- SÍNTOMAS / DOLOR --------------------------- */}
+
         <div>
           <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
-            ¿Dolor espontáneo?
+            Tipo de dolor principal
           </label>
           <select 
-            name="spontaneous_pain_yesno" 
+            name="tipo_dolor" 
             onChange={handleChange}
             style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
           >
             <option value="">Seleccione</option>
-            <option value="1">Sí</option>
-            <option value="0">No</option>
+            <option value="sin_dolor">Sin dolor</option>
+            <option value="dolor_provocado_corto">Dolor provocado de corta duración</option>
+            <option value="dolor_provocado_largo">Dolor provocado de larga duración</option>
+            <option value="dolor_espontaneo">Dolor espontáneo</option>
+            <option value="dolor_mal_localizado">Dolor mal localizado / irradiado</option>
+            <option value="no_refiere">No refiere / no sabe describir</option>
           </select>
         </div>
 
@@ -154,6 +165,8 @@ export default function CreateForm() {
           />
         </div>
 
+        {/* ------------------------- HALLAZGOS CLÍNICOS -------------------------- */}
+
         <div>
           <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
             Profundidad de caries
@@ -164,26 +177,77 @@ export default function CreateForm() {
             style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
           >
             <option value="">Seleccione</option>
-            <option value="superficial">Superficial</option>
-            <option value="media">Media</option>
-            <option value="profunda">Profunda</option>
+            <option value="no_aplica">No aplica / diente tratado</option>
+            <option value="no_refiere">No valorable</option>
+            <option value="superficial">Esmaltaria / superficial</option>
+            <option value="media">Dentinaria media</option>
+            <option value="profunda">Dentinaria profunda</option>
           </select>
         </div>
 
         <div>
           <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
-            ¿Control de sangrado posible?
+            Profundidad de sondaje máxima (mm)
+          </label>
+          <input 
+            type="number" 
+            name="sondaje_max_mm" 
+            min="0" 
+            max="12"
+            placeholder="Ej: 6"
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+          />
+        </div>
+
+        <div>
+          <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
+            Sangrado controlable
           </label>
           <select 
-            name="bleeding_control_possible" 
+            name="sangrado_controlable" 
             onChange={handleChange}
             style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
           >
             <option value="">Seleccione</option>
-            <option value="yes">Sí</option>
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+            <option value="no_valorable">No valorable</option>
+          </select>
+        </div>
+
+        <div>
+          <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
+            ¿Se abrió cámara en esta cita?
+          </label>
+          <select 
+            name="camara_abierta" 
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+          >
+            <option value="">Seleccione</option>
+            <option value="si">Sí</option>
             <option value="no">No</option>
           </select>
         </div>
+
+        <div>
+          <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
+            Pulpa expuesta
+          </label>
+          <select 
+            name="pulpa_expuesta" 
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+          >
+            <option value="">Seleccione</option>
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+            <option value="no_valorable">No valorable</option>
+          </select>
+        </div>
+
+        {/* ------------------------- HALLAZGOS RADIOLÓGICOS ------------------------ */}
 
         <div>
           <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
@@ -245,6 +309,7 @@ export default function CreateForm() {
           />
         </div>
 
+        {/* --------------------------- NOTAS ----------------------------- */}
         <div>
           <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
             Notas clínicas
@@ -264,6 +329,8 @@ export default function CreateForm() {
           ></textarea>
         </div>
 
+        {/* ------------------------ BOTÓN ----------------------------- */}
+
         <button 
           type="submit" 
           disabled={isSubmitting}
@@ -280,6 +347,7 @@ export default function CreateForm() {
         >
           {isSubmitting ? "Enviando..." : "✅ Enviar caso"}
         </button>
+
       </form>
     </div>
   );

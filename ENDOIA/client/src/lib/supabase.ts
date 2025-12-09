@@ -16,6 +16,7 @@ export interface CaseRecord {
   fecha?: string;
   clinicoEmail: string;
   tooth_fdi: number | string;
+  tipo_dolor?: string;
   spontaneous_pain_yesno?: number | string;
   thermal_cold_response?: number | string;
   lingering_pain_seconds?: string;
@@ -26,6 +27,8 @@ export interface CaseRecord {
   depth_of_caries?: string;
   percussion_pain_yesno?: string;
   bleeding_control_possible?: string;
+  camara_abierta?: string;
+  pulpa_expuesta?: string;
   sinus_tract_present?: string;
   systemic_involvement?: string;
   previous_treatment?: string;
