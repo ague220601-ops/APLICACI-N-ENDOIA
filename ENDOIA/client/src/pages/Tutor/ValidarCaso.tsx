@@ -220,6 +220,90 @@ export default function ValidarCaso() {
             </CardContent>
           </Card>
 
+          {/* BLOQUE DE IA RADIOLÓGICA */}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-blue-900">
+                <AlertCircle className="w-5 h-5" />
+                Análisis Radiográfico IA (Vision GPT)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">PAI inicial (IA)</p>
+                <p className="font-medium">{caso.vision_PAI_baseline ?? "No disponible"}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">PAI seguimiento (IA)</p>
+                <p className="font-medium">{caso.vision_PAI_followup ?? "No disponible"}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Radiolucidez detectada</p>
+                <p className="font-medium">{caso.vision_radiolucency_detected ? "Sí" : "No"}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Diámetro lesión (baseline)</p>
+                <p className="font-medium">{caso.vision_lesion_diam_mm_baseline ? `${caso.vision_lesion_diam_mm_baseline} mm` : "No disponible"}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Diámetro lesión (follow-up)</p>
+                <p className="font-medium">{caso.vision_lesion_diam_mm_followup ? `${caso.vision_lesion_diam_mm_followup} mm` : "No disponible"}</p>
+              </div>
+              {caso.IA_flags && caso.IA_flags.length > 0 && (
+                <div className="md:col-span-2">
+                  <p className="text-sm font-semibold text-blue-800 mb-2">Alertas IA</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {caso.IA_flags.map((flag: string, idx: number) => (
+                      <li key={idx} className="text-blue-700 text-sm">{flag}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* BLOQUE DE COHERENCIA CLÍNICO – IA */}
+          <Card className="bg-orange-50 border-orange-200">
+            <CardHeader>
+              <CardTitle className="text-orange-800">Coherencia Clínico – IA</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Radiolucidez (Clínico)</p>
+                  <p className="font-medium">
+                    {caso.radiolucency_yesno === "si" || caso.radiolucency_yesno === "1" || toNumber(caso.radiolucency_yesno) === 1 ? "Sí" : "No"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Radiolucidez (IA)</p>
+                  <p className="font-medium">{caso.vision_radiolucency_detected ? "Sí" : "No"}</p>
+                </div>
+              </div>
+              <div className="pt-2 border-t border-orange-200">
+                <p className="text-sm text-muted-foreground">Interpretación final</p>
+                <p className="font-medium">
+                  {caso.vision_radiolucency_detected
+                    ? "Radiolucidez presente (confirmada por IA)"
+                    : (caso.radiolucency_yesno === "si" || caso.radiolucency_yesno === "1" || toNumber(caso.radiolucency_yesno) === 1)
+                      ? "Radiolucidez presente (identificada por el clínico)"
+                      : "No se detecta radiolucidez"}
+                </p>
+              </div>
+              {(caso.vision_radiolucency_detected &&
+                (caso.radiolucency_yesno === "no" ||
+                 caso.radiolucency_yesno === "0" ||
+                 toNumber(caso.radiolucency_yesno) === 0)) && (
+                <div className="bg-orange-100 p-3 rounded-lg">
+                  <p className="text-orange-700 text-sm">
+                    <strong>Aviso:</strong> Se detecta discrepancia entre el clínico y la IA.
+                    La interpretación final prioriza la detección de IA por seguridad diagnóstica.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {caso.notes && caso.notes.trim() !== '' && (
             <Card>
               <CardHeader>

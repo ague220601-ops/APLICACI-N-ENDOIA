@@ -110,6 +110,8 @@ interface CasoData {
   vision_PAI_followup?: number | string;
   vision_lesion_diam_mm_baseline?: number | string;
   vision_lesion_diam_mm_followup?: number | string;
+  vision_radiolucency_detected?: boolean;
+  IA_flags?: string[];
 }
 
 function toNumber(value: number | string | null | undefined): number {
@@ -450,6 +452,71 @@ function CaseModal({ caso, onClose, onActualizar }: CaseModalProps) {
                 Diagnóstico IA (AAE/ESE 2025)
               </h3>
               <EnhancedDiagnosisBadges caso={caso} />
+            </div>
+          </div>
+
+          {/* BLOQUE DE IA RADIOLÓGICA */}
+          <div className="bg-blue-50 p-4 rounded-lg mt-6 border border-blue-200">
+            <h3 className="text-blue-900 font-semibold mb-3 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              Análisis Radiográfico IA (Vision GPT)
+            </h3>
+            <div className="space-y-2 text-sm">
+              <p><strong>PAI inicial (IA):</strong> {caso.vision_PAI_baseline ?? "No disponible"}</p>
+              <p><strong>PAI seguimiento (IA):</strong> {caso.vision_PAI_followup ?? "No disponible"}</p>
+              <p><strong>Radiolucidez detectada:</strong> {caso.vision_radiolucency_detected ? "Sí" : "No"}</p>
+              <p>
+                <strong>Diámetro lesión (baseline):</strong>{" "}
+                {caso.vision_lesion_diam_mm_baseline ? `${caso.vision_lesion_diam_mm_baseline} mm` : "No disponible"}
+              </p>
+              <p>
+                <strong>Diámetro lesión (follow-up):</strong>{" "}
+                {caso.vision_lesion_diam_mm_followup ? `${caso.vision_lesion_diam_mm_followup} mm` : "No disponible"}
+              </p>
+              {caso.IA_flags && caso.IA_flags.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-blue-200">
+                  <h4 className="font-semibold text-blue-800 mb-2">Alertas IA</h4>
+                  <ul className="list-disc list-inside space-y-1">
+                    {caso.IA_flags.map((flag, idx) => (
+                      <li key={idx} className="text-blue-700">{flag}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* BLOQUE DE COHERENCIA CLÍNICO – IA */}
+          <div className="bg-orange-50 p-4 rounded-lg mt-5 border border-orange-200">
+            <h3 className="text-orange-800 font-semibold mb-3">
+              Coherencia Clínico – IA
+            </h3>
+            <div className="space-y-2 text-sm">
+              <p>
+                <strong>Radiolucidez (Clínico):</strong>{" "}
+                {caso.radiolucency_yesno === "si" || caso.radiolucency_yesno === "1" || toNumber(caso.radiolucency_yesno) === 1 ? "Sí" : "No"}
+              </p>
+              <p>
+                <strong>Radiolucidez (IA):</strong>{" "}
+                {caso.vision_radiolucency_detected ? "Sí" : "No"}
+              </p>
+              <p className="mt-2 pt-2 border-t border-orange-200">
+                <strong>Interpretación final:</strong>{" "}
+                {caso.vision_radiolucency_detected
+                  ? "Radiolucidez presente (confirmada por IA)"
+                  : (caso.radiolucency_yesno === "si" || caso.radiolucency_yesno === "1" || toNumber(caso.radiolucency_yesno) === 1)
+                    ? "Radiolucidez presente (identificada por el clínico)"
+                    : "No se detecta radiolucidez"}
+              </p>
+              {(caso.vision_radiolucency_detected &&
+                (caso.radiolucency_yesno === "no" ||
+                 caso.radiolucency_yesno === "0" ||
+                 toNumber(caso.radiolucency_yesno) === 0)) && (
+                <p className="text-orange-700 mt-3 p-2 bg-orange-100 rounded">
+                  <strong>Aviso:</strong> Se detecta discrepancia entre el clínico y la IA.
+                  La interpretación final prioriza la detección de IA por seguridad diagnóstica.
+                </p>
+              )}
             </div>
           </div>
 
