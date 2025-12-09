@@ -24,8 +24,6 @@ export default function CreateForm() {
         ...formData, 
         ...dx,
         clinicoEmail: formData.clinico_correo,
-        probing_max_depth_mm: formData.sondaje_max_mm,
-        bleeding_control_possible: formData.sangrado_controlable,
         date: new Date().toISOString().split('T')[0]
       };
 
