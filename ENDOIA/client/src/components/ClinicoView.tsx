@@ -143,7 +143,6 @@ export default function ClinicoView() {
         : form.respuestaFrio === "2_aumentada" ? "2" : "1",
       lingering_pain_seconds: form.lingeringSeg || "0",
       depth_of_caries: form.profundidadCaries || null,
-      bleeding_control_possible: form.sangradoControlable === "si" ? "sí" : form.sangradoControlable === "no" ? "no" : null,
       
       // Nuevos campos clínicos AAE-ESE 2025
       tipo_dolor: form.tipo_dolor || null,
@@ -160,7 +159,6 @@ export default function ClinicoView() {
       pdl_widening: form.radiolucidezApical === "si" ? "3" 
         : (form.percusionDolor === "si" ? "2" : "1"),
       percussion_pain_yesno: form.percusionDolor === "si" ? "sí" : "no",
-      probing_max_depth_mm: "0", // No está en formulario actual
       
       // Campos clínicos adicionales
       sinus_tract_present: form.sinusTractPresent === "si" ? "sí" : "no",
