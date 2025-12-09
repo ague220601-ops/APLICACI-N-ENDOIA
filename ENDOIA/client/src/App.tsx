@@ -16,6 +16,7 @@ import CasosPendientes from "@/pages/Tutor/CasosPendientes";
 import ValidarCaso from "@/pages/Tutor/ValidarCaso";
 import Dashboard from "@/pages/Investigador/Dashboard";
 import BibliotecaPage from "@/pages/BibliotecaPage";
+import AboutEndoia from "@/pages/AboutEndoia";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -82,6 +83,13 @@ function Router() {
         <ProtectedRoute allowedRoles={['clinico', 'tutor', 'investigador']}>
           <Navbar />
           <BibliotecaPage />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/sobre-endoia">
+        <ProtectedRoute allowedRoles={['clinico', 'tutor', 'investigador']}>
+          <Navbar />
+          <AboutEndoia />
         </ProtectedRoute>
       </Route>
 

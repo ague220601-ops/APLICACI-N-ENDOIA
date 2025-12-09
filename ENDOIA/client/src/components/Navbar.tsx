@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Sparkles, FilePlus, FolderOpen, FileCheck, BarChart3, BookOpen, LogOut, Menu } from 'lucide-react';
+import { Sparkles, FilePlus, FolderOpen, FileCheck, BarChart3, BookOpen, LogOut, Menu, Info } from 'lucide-react';
 import { useAuth } from '@/auth/AuthContext';
 import { auth } from '@/lib/firebase';
 import PWAInstallButton from '@/components/PWAInstallButton';
@@ -88,6 +88,16 @@ export default function Navbar() {
                 Biblioteca
               </Button>
 
+              <Button
+                variant={isActive('/sobre-endoia') ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setLocation('/sobre-endoia')}
+                className="gap-2"
+              >
+                <Info className="w-4 h-4" />
+                Sobre ENDOIA
+              </Button>
+
               {(role === 'tutor' || role === 'investigador') && (
                 <Button
                   variant={isActive('/tutor') ? 'default' : 'ghost'}
@@ -165,6 +175,15 @@ export default function Navbar() {
                   >
                     <BookOpen className="w-4 h-4" />
                     Biblioteca
+                  </Button>
+
+                  <Button
+                    variant={isActive('/sobre-endoia') ? 'default' : 'ghost'}
+                    className="justify-start gap-2"
+                    onClick={() => navigateTo('/sobre-endoia')}
+                  >
+                    <Info className="w-4 h-4" />
+                    Sobre ENDOIA
                   </Button>
 
                   {(role === 'tutor' || role === 'investigador') && (
