@@ -1,0 +1,209 @@
+1️⃣ Arreglar profundidad de caries (añadir “No aplica / No refiere”)
+
+En tu componente del formulario (algo tipo CaseForm.tsx), busca el <select> de profundidad de caries, que estará parecido a esto:
+
+<label>
+  Profundidad de caries
+  <select
+    name="profundidad_caries"
+    value={form.profndidad_caries}
+    onChange={handleChange}
+  >
+    <option value="">Selecciona una opción</option>
+    <option value="esmaltaria">Esmaltaria</option>
+    <option value="dentinaria_media">Dentinaria media</option>
+    <option value="dentinaria_profunda">Dentinaria profunda</option>
+  </select>
+</label>
+
+
+Cámbialo por esto:
+
+<label className="campo">
+  Profundidad de caries
+  <select
+    name="profundidad_caries"
+    value={form.profundidad_caries || ""}
+    onChange={handleChange}
+  >
+    <option value="">Selecciona una opción</option>
+    <option value="no_aplica">No aplica / diente ya tratado</option>
+    <option value="no_refiere">No se puede determinar</option>
+    <option value="esmaltaria">Esmaltaria</option>
+    <option value="dentinaria_media">Dentinaria media</option>
+    <option value="dentinaria_profunda">Dentinaria profunda</option>
+  </select>
+</label>
+
+
+Con esto ya puedes registrar dientes tratados sin obligarte a inventarte una caries.
+
+2️⃣ Añadir campos clínicos que faltaban
+a) En el estado inicial del formulario
+
+En el useState de tu formulario, añade estos campos:
+
+const [form, setForm] = useState({
+  // ...lo que ya tienes
+  profundidad_caries: "",
+  sondaje_max_mm: "",
+  sangrado_controlable: "",      // "si" | "no"
+  camara_abierta: "",            // "si" | "no"
+  pulpa_expuesta: "",            // "si" | "no"
+  tipo_dolor: "",                // ver opciones abajo
+});
+
+b) En los inputs del JSX
+
+Te dejo un bloque que puedes pegar donde tengas otros datos clínicos (son todos <label> con sus campos):
+
+{/* PROFUNDIDAD DE SONDAJE MÁXIMO */}
+<label className="campo">
+  Profundidad de sondaje máxima (mm)
+  <input
+    type="number"
+    name="sondaje_max_mm"
+    min={0}
+    max={12}
+    step={1}
+    value={form.sondaje_max_mm || ""}
+    onChange={handleChange}
+    placeholder="p.ej. 6"
+  />
+</label>
+
+{/* SANGRADO CONTROLABLE */}
+<label className="campo">
+  Sangrado controlable
+  <select
+    name="sangrado_controlable"
+    value={form.sangrado_controlable || ""}
+    onChange={handleChange}
+  >
+    <option value="">Selecciona una opción</option>
+    <option value="si">Sí</option>
+    <option value="no">No</option>
+    <option value="no_valorable">No valorable</option>
+  </select>
+</label>
+
+{/* ¿SE ABRIÓ LA CÁMARA EN ESTA CITA? */}
+<label className="campo">
+  ¿Se abrió la cámara pulpar en esta cita?
+  <select
+    name="camara_abierta"
+    value={form.camara_abierta || ""}
+    onChange={handleChange}
+  >
+    <option value="">Selecciona una opción</option>
+    <option value="si">Sí</option>
+    <option value="no">No</option>
+  </select>
+</label>
+
+{/* PULPA EXPUESTA */}
+<label className="campo">
+  Pulpa expuesta
+  <select
+    name="pulpa_expuesta"
+    value={form.pulpa_expuesta || ""}
+    onChange={handleChange}
+  >
+    <option value="">Selecciona una opción</option>
+    <option value="si">Sí</option>
+    <option value="no">No</option>
+    <option value="no_valorable">No valorable</option>
+  </select>
+</label>
+
+{/* TIPO DE DOLOR (COMPATIBLE AAE–ESE 2025) */}
+<label className="campo">
+  Tipo de dolor principal
+  <select
+    name="tipo_dolor"
+    value={form.tipo_dolor || ""}
+    onChange={handleChange}
+  >
+    <option value="">Selecciona una opción</option>
+    <option value="sin_dolor">Sin dolor</option>
+    <option value="dolor_provocado_corto">
+      Dolor provocado de corta duración
+    </option>
+    <option value="dolor_provocado_largo">
+      Dolor provocado de larga duración
+    </option>
+    <option value="dolor_espontaneo">
+      Dolor espontáneo
+    </option>
+    <option value="dolor_mal_localizado">
+      Dolor mal localizado / irradiado
+    </option>
+    <option value="no_refiere">No refiere / no sabe describir</option>
+  </select>
+</label>
+
+
+Con estas categorías, tu modelo IA luego ya puede mapear a:
+
+pulpa normal
+
+pulpitis sintomática leve / severa
+
+pulpa necrótica
+de forma mucho más limpia.
+
+3️⃣ Envío al backend (payload a tu API / Supabase)
+
+En el handleSubmit, cuando construyes el objeto que mandas al backend, asegúrate de incluir los nuevos campos.
+
+Si tienes algo así:
+
+const payload = {
+  // antes
+  case_id: form.case_id,
+  diente: form.diente,
+  diagnostico_clinico: form.diagnostico_clinico,
+  // ...
+};
+
+
+Cámbialo a:
+
+const payload = {
+  // ...campos que ya tenías
+  profundidad_caries: form.profundidad_caries || null,
+  sondaje_max_mm: form.sondaje_max_mm
+    ? Number(form.sondaje_max_mm)
+    : null,
+  sangrado_controlable: form.sangrado_controlable || null,
+  camara_abierta: form.camara_abierta || null,
+  pulpa_expuesta: form.pulpa_expuesta || null,
+  tipo_dolor: form.tipo_dolor || null,
+};
+
+
+En el backend (Express → Supabase), simplemente asegúrate de que haces:
+
+const {
+  // ...otros campos
+  profundidad_caries,
+  sondaje_max_mm,
+  sangrado_controlable,
+  camara_abierta,
+  pulpa_expuesta,
+  tipo_dolor,
+} = req.body;
+
+const { error } = await supabase
+  .from("cases")
+  .insert([
+    {
+      // ...otros campos
+      profundidad_caries,
+      sondaje_max_mm,
+      sangrado_controlable,
+      camara_abierta,
+      pulpa_expuesta,
+      tipo_dolor,
+    },
+  ]);
