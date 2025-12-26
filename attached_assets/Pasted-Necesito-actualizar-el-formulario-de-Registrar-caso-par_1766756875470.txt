@@ -1,0 +1,40 @@
+Necesito actualizar el formulario de “Registrar caso” para soportar la nueva columna de Supabase: public.cases.case_origin (text) con valores permitidos: 'prospective', 'retrospective', 'test'. Default en BD: 'prospective'.
+
+OBJETIVO:
+- Añadir un campo en el formulario llamado “Tipo de inclusión” (dropdown/select).
+- Opciones visibles para todos: 
+  - Prospectivo -> 'prospective'
+  - Retrospectivo -> 'retrospective'
+- Opción extra SOLO si el usuario tiene rol "Investigador" (investigador):
+  - Prueba (simulado) -> 'test'
+
+REGLAS IMPORTANTES:
+- Si el usuario NO es Investigador, nunca debe poder seleccionar ni enviar 'test' (ni en UI ni en payload).
+- Si el usuario es Investigador, sí puede elegir 'test'.
+- Si no se selecciona nada, usar 'prospective' por defecto en el estado del formulario (y/o dejar que el default de BD actúe, pero preferiblemente enviar 'prospective').
+- No romper el flujo actual de creación de casos ni la validación existente.
+
+IMPLEMENTACIÓN:
+1) Localiza el componente/página de registro de caso (CreateForm / RegistrarCaso / CreateForm.tsx u otro).
+2) Añade al estado del formulario una propiedad: case_origin.
+   - Inicializar como 'prospective'.
+3) Renderiza el selector:
+   - Label: “Tipo de inclusión”
+   - Helper text opcional: “Prospectivo / Retrospectivo. ‘Prueba’ solo para investigación.”
+4) Control de roles:
+   - Detecta el rol del usuario actual (ya existe en el proyecto: el usuario aparece como “Investigador” en la UI).
+   - Usa la misma fuente de verdad que ya emplea la app para saber el rol (por ejemplo: profile.role / userRole / claims).
+   - Si role === 'investigador' (o el string exacto que use la app), muestra la opción 'test'.
+   - Si no, no la muestres y además fuerza case_origin a 'prospective' o 'retrospective' (nunca 'test').
+
+5) Al hacer el insert en Supabase a la tabla cases, incluye case_origin:
+   - payload: { ...otrosCampos, case_origin: form.case_origin }
+   - Asegúrate de que el tipo de datos es string y coincide con los valores permitidos.
+
+6) (Opcional recomendado) En el server/route o función que crea el caso (si existe backend además de front), añade el mismo guard:
+   - Si el rol no es investigador, si llega 'test' -> reemplaza por 'prospective' o rechaza con error.
+
+ENTREGA:
+- Indícame qué archivos tocaste.
+- Pega el código final de los cambios.
+- Confirma que compila sin errores TypeScript.

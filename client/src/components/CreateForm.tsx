@@ -2,9 +2,11 @@ import { useState } from "react";
 // @ts-ignore - JS module
 import { getDiagnosisAAE_ESE } from "../lib/IA_AAE_ESE";
 import { enviarCasoNuevo } from "../lib/api";
+import { useAuth } from "../auth/AuthContext";
 
 export default function CreateForm() {
-  const [formData, setFormData] = useState<any>({});
+  const { role } = useAuth();
+  const [formData, setFormData] = useState<any>({ case_origin: 'prospective' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [diagnosis, setDiagnosis] = useState<any>(null);
 
@@ -20,9 +22,14 @@ export default function CreateForm() {
       const dx = getDiagnosisAAE_ESE(formData);
       setDiagnosis(dx);
       
+      const safeOrigin = (role === 'investigador' && formData.case_origin === 'test') 
+        ? 'test' 
+        : (formData.case_origin === 'retrospective' ? 'retrospective' : 'prospective');
+      
       const payload = { 
         ...formData, 
         ...dx,
+        case_origin: safeOrigin,
         clinicoEmail: formData.clinico_correo,
         date: new Date().toISOString().split('T')[0]
       };
@@ -98,6 +105,27 @@ export default function CreateForm() {
             required 
             style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
           />
+        </div>
+
+        <div>
+          <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
+            Tipo de inclusión
+          </label>
+          <select 
+            name="case_origin" 
+            value={formData.case_origin || 'prospective'}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+          >
+            <option value="prospective">Prospectivo</option>
+            <option value="retrospective">Retrospectivo</option>
+            {role === 'investigador' && (
+              <option value="test">Prueba (simulado)</option>
+            )}
+          </select>
+          <small style={{ color: "#666", fontSize: "0.85rem" }}>
+            Prospectivo / Retrospectivo. {role === 'investigador' ? "'Prueba' solo para investigación." : ""}
+          </small>
         </div>
 
         <div>

@@ -77,6 +77,7 @@ export async function enviarCasoNuevo(datosCaso: any) {
       fecha_control_1m: datosCaso.fecha_control_1m || '',
       fecha_control_3m: datosCaso.fecha_control_3m || '',
       fecha_control_6m: datosCaso.fecha_control_6m || '',
+      case_origin: datosCaso.case_origin || 'prospective',
     };
 
     console.log("📤 Insertando caso en Supabase:", caseRecord.case_id);

@@ -58,4 +58,5 @@ export interface CaseRecord {
   validado_INV?: string;
   AEDE_pulpar_FINAL?: string;
   AEDE_apical_FINAL?: string;
+  case_origin?: 'prospective' | 'retrospective' | 'test';
 }
