@@ -48,7 +48,18 @@ Additional preferences:
 ### AI Integration
 - **Vision Analysis**: OpenAI GPT-4o Vision for radiograph analysis
 - **Diagnostic Engine**: Custom AAE-ESE 2025 classification logic in `client/src/lib/IA_AAE_ESE_2025.ts`
-- **Endpoint**: `/api/vision-analyze` processes images server-side to protect API keys
+
+## Project Structure
+
+The project files are now located in the workspace root (moved from ENDOIA/ subdirectory on Dec 26, 2025 to fix deployment issues):
+- `client/` - React frontend source code
+- `server/` - Express backend source code
+- `shared/` - Shared types and schema definitions
+- `dist/` - Build output directory
+- `public/` - Static assets and PWA icons
+
+### API Endpoint
+- **Vision**: `/api/vision-analyze` processes images server-side to protect API keys
 
 ### PWA Configuration
 - **Plugin**: vite-plugin-pwa with auto-update service worker

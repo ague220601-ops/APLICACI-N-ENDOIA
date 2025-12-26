@@ -22,13 +22,13 @@ args = "ENDOIA Server"
 name = "ENDOIA Server"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd ENDOIA && npm run dev"
-waitForPort = 5000
-
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
 
 [[ports]]
 localPort = 5000
@@ -36,5 +36,5 @@ externalPort = 80
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["bash", "-c", "cd ENDOIA && npm run start"]
-build = ["bash", "-c", "cd ENDOIA && npm run build"]
+run = ["npm", "run", "start"]
+build = ["npm", "run", "build"]
