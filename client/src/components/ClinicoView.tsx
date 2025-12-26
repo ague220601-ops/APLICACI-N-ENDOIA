@@ -30,13 +30,14 @@ function generarCaseID(identificadorLocal = "") {
 }
 
 export default function ClinicoView() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   
   const [form, setForm] = useState<CasoClinico & {
     tipo_dolor?: string;
     sondaje_max_mm?: string;
     camara_abierta?: string;
     pulpa_expuesta?: string;
+    case_origin?: string;
   }>({
     case_id: "",
     tooth_fdi: "",
@@ -59,6 +60,7 @@ export default function ClinicoView() {
     sondaje_max_mm: "",
     camara_abierta: "",
     pulpa_expuesta: "",
+    case_origin: "prospective",
   });
 
   useEffect(() => {
@@ -184,6 +186,11 @@ export default function ClinicoView() {
       fecha_control_1m: "",
       fecha_control_3m: "",
       fecha_control_6m: "",
+      
+      // Tipo de inclusión (con seguridad de rol)
+      case_origin: (role === 'investigador' && form.case_origin === 'test') 
+        ? 'test' 
+        : (form.case_origin === 'retrospective' ? 'retrospective' : 'prospective'),
     };
 
     const r = await enviarCasoNuevo(payload);
@@ -260,6 +267,28 @@ export default function ClinicoView() {
                   placeholder="36"
                   required
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="case_origin">Tipo de inclusión</Label>
+                <Select
+                  value={form.case_origin || "prospective"}
+                  onValueChange={(value) => handleChange("case_origin", value)}
+                >
+                  <SelectTrigger id="case_origin" data-testid="select-case-origin">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="prospective">Prospectivo</SelectItem>
+                    <SelectItem value="retrospective">Retrospectivo</SelectItem>
+                    {role === 'investigador' && (
+                      <SelectItem value="test">Prueba (simulado)</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Prospectivo / Retrospectivo.{role === 'investigador' ? " 'Prueba' solo para investigación." : ""}
+                </p>
               </div>
 
               <div className="space-y-2">
