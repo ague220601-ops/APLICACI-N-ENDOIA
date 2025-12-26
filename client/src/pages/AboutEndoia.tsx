@@ -59,7 +59,7 @@ export default function AboutEndoia() {
         <ul>
           <li>🔥 Análisis radiográfico automático</li>
           <li>🔥 Probabilidad de éxito del tratamiento (IA)
-            <br/><em>Ejemplo (simulado): estimación de probabilidad de éxito basada en IA</em>
+            <br/>Ejemplo (simulado): estimación de probabilidad de éxito basada en IA
           </li>
           <li>🔥 Seguimiento clínico 1–12 meses</li>
           <li>🔥 Validación multicéntrica</li>
