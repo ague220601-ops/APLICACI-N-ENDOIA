@@ -2,11 +2,17 @@ export default function AboutEndoia() {
   return (
     <div style={{ padding: "40px", maxWidth: "900px", margin: "0 auto" }}>
 
-      <h1 style={{ fontSize: "2.6rem", textAlign: "center", color: "#004AAD" }}>
+      <h1 style={{ fontSize: "2.6rem", textAlign: "center", color: "#004AAD", marginBottom: "8px" }}>
         ENDOIA
       </h1>
-      <p style={{ textAlign: "center", fontSize: "1.2rem", color: "#333" }}>
+      <p style={{ textAlign: "center", fontSize: "1.25rem", color: "#333", marginBottom: "4px" }}>
         Diagnóstico endodóntico asistido por Inteligencia Artificial
+      </p>
+      <p style={{ textAlign: "center", fontSize: "0.95rem", color: "#555", marginBottom: "12px" }}>
+        Basado en la clasificación AAE–ESE 2025 y validado por expertos
+      </p>
+      <p style={{ textAlign: "center", fontSize: "0.9rem", color: "#666", fontStyle: "italic" }}>
+        Para docencia, investigación y práctica clínica supervisada en Endodoncia.
       </p>
 
       <section style={{ marginTop: "40px" }}>
@@ -39,11 +45,21 @@ export default function AboutEndoia() {
       </section>
 
       <section style={{ marginTop: "30px" }}>
+        <h2 style={{ color: "#004AAD" }}>Cómo funciona ENDOIA</h2>
+        <ol style={{ paddingLeft: "20px", lineHeight: "1.8" }}>
+          <li><strong>1.</strong> El clínico registra el caso (datos clínicos + pruebas)</li>
+          <li><strong>2.</strong> La IA propone diagnóstico pulpar y apical (AAE–ESE 2025)</li>
+          <li><strong>3.</strong> El tutor valida o corrige el diagnóstico (queda registrado)</li>
+          <li><strong>4.</strong> El caso se estructura para docencia e investigación (dataset)</li>
+        </ol>
+      </section>
+
+      <section style={{ marginTop: "30px" }}>
         <h2 style={{ color: "#004AAD" }}>Roadmap</h2>
         <ul>
           <li>🔥 Análisis radiográfico automático</li>
           <li>🔥 Probabilidad de éxito del tratamiento (IA)
-            <br/><em>"Ejemplo: 92% de éxito estimado"</em>
+            <br/><em>Ejemplo (simulado): estimación de probabilidad de éxito basada en IA</em>
           </li>
           <li>🔥 Seguimiento clínico 1–12 meses</li>
           <li>🔥 Validación multicéntrica</li>
@@ -58,6 +74,22 @@ export default function AboutEndoia() {
           Convertir ENDOIA en la herramienta estándar de diagnóstico endodóntico 
           asistido por IA para clínica, docencia e investigación.
         </p>
+      </section>
+
+      <section style={{ 
+        marginTop: "40px", 
+        padding: "16px 20px", 
+        backgroundColor: "#f8f9fa", 
+        border: "1px solid #e0e0e0", 
+        borderRadius: "8px" 
+      }}>
+        <h3 style={{ color: "#555", fontSize: "0.95rem", marginBottom: "10px" }}>Aviso académico y ético</h3>
+        <ul style={{ fontSize: "0.85rem", color: "#666", margin: 0, paddingLeft: "18px", lineHeight: "1.7" }}>
+          <li>ENDOIA es una herramienta de apoyo a la decisión clínica.</li>
+          <li>No sustituye el juicio profesional del odontólogo.</li>
+          <li>El diagnóstico final es siempre responsabilidad del clínico.</li>
+          <li>Los datos se anonimizan y se emplean con fines docentes y de investigación.</li>
+        </ul>
       </section>
 
       <div style={{ textAlign: "center", marginTop: "40px" }}>

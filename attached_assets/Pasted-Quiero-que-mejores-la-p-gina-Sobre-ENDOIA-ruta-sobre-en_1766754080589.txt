@@ -1,0 +1,43 @@
+Quiero que mejores la página “Sobre ENDOIA” (ruta /sobre-endoia) sin cambiar la estructura general, solo puliendo mensaje, jerarquía y añadiendo secciones clave. Mantén el estilo actual (tipografías, colores, espaciados) y no rompas navegación.
+
+OBJETIVOS (prioridad alta):
+1) Mejorar el “hero” (título + subtítulo) para que sea menos genérico:
+   - Mantén el título “ENDOIA”.
+   - Sustituye el subtítulo actual por:
+     “Diagnóstico endodóntico asistido por Inteligencia Artificial”
+     y añade una segunda línea más pequeña:
+     “Basado en la clasificación AAE–ESE 2025 y validado por expertos”
+   - Justo debajo añade una línea corta:
+     “Para docencia, investigación y práctica clínica supervisada en Endodoncia.”
+
+2) Añadir una sección nueva “Cómo funciona ENDOIA” (entre “Qué ofrece hoy” y “Roadmap”, o donde mejor encaje visualmente) con 4 pasos numerados:
+   1. El clínico registra el caso (datos clínicos + pruebas)
+   2. La IA propone diagnóstico pulpar y apical (AAE–ESE 2025)
+   3. El tutor valida o corrige el diagnóstico (queda registrado)
+   4. El caso se estructura para docencia e investigación (dataset)
+
+3) Añadir al final de la página (antes del botón “Registrar un caso” o en el footer de la sección) un bloque “Aviso académico y ético” con 4 líneas:
+   - “ENDOIA es una herramienta de apoyo a la decisión clínica.”
+   - “No sustituye el juicio profesional del odontólogo.”
+   - “El diagnóstico final es siempre responsabilidad del clínico.”
+   - “Los datos se anonimizan y se emplean con fines docentes y de investigación.”
+   Estilo: un recuadro discreto (border suave / background muy claro), tipografía pequeña, y que no “asuste” visualmente.
+
+OBJETIVOS (prioridad media):
+4) En Roadmap, cambia la línea actual:
+   “Ejemplo: 92% de éxito estimado”
+   por:
+   “Ejemplo (simulado): estimación de probabilidad de éxito basada en IA”
+   (sin comillas, y manteniendo el mismo estilo).
+
+REGLAS:
+- No cambies rutas, no elimines secciones existentes (Qué es, El problema, Qué ofrece hoy, Roadmap, Visión).
+- No alteres el funcionamiento del botón “Registrar un caso”.
+- Si hay un componente (p.ej. SobreENDOIA.tsx o similar), haz los cambios ahí con el mínimo diff posible.
+- Mantén accesibilidad básica: headings correctos (h1/h2/h3), listas semánticas, y buen espaciado.
+- Tras aplicar cambios, revisa que compile y no haya errores de TypeScript.
+
+Devuélveme:
+- Qué archivos tocaste
+- Un resumen rápido de cambios
+- Y el código actualizado.
