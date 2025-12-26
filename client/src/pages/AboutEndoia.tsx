@@ -2,16 +2,16 @@ export default function AboutEndoia() {
   return (
     <div style={{ padding: "40px", maxWidth: "900px", margin: "0 auto" }}>
 
-      <h1 style={{ fontSize: "2.6rem", textAlign: "center", color: "#004AAD", marginBottom: "8px" }}>
+      <h1 style={{ fontSize: "2.6rem", textAlign: "center", color: "#004AAD", marginBottom: "4px" }}>
         ENDOIA
       </h1>
-      <p style={{ textAlign: "center", fontSize: "1.25rem", color: "#333", marginBottom: "4px" }}>
+      <h2 style={{ textAlign: "center", fontSize: "1.4rem", color: "#333", fontWeight: "normal", marginBottom: "8px" }}>
         Diagnóstico endodóntico asistido por Inteligencia Artificial
-      </p>
-      <p style={{ textAlign: "center", fontSize: "0.95rem", color: "#555", marginBottom: "12px" }}>
+      </h2>
+      <p style={{ textAlign: "center", fontSize: "1rem", color: "#555", marginBottom: "8px" }}>
         Basado en la clasificación AAE–ESE 2025 y validado por expertos
       </p>
-      <p style={{ textAlign: "center", fontSize: "0.9rem", color: "#666", fontStyle: "italic" }}>
+      <p style={{ textAlign: "center", fontSize: "0.9rem", color: "#666" }}>
         Para docencia, investigación y práctica clínica supervisada en Endodoncia.
       </p>
 
