@@ -224,12 +224,12 @@ export default function Dashboard() {
 
   const pulparDistribution = OPCIONES_PULPAR.map(opcion => ({
     name: opcion.replace('Clinically normal pulp', 'Normal').replace('Hypersensitive pulp', 'Hypersensitive').replace('Mild pulpitis', 'Mild').replace('Severe pulpitis', 'Severe').replace('Pulp necrosis', 'Necrosis').replace('Inconclusive pulp status', 'Inconclusive'),
-    value: casos.filter(c => c.AEDE_pulpar_FINAL === opcion).length,
+    value: casos.filter(c => (c.AEDE_pulpar_FINAL || c.AEDE_pulpar_IA) === opcion).length,
   }));
 
   const apicalDistribution = OPCIONES_APICAL.map(opcion => ({
     name: opcion.replace('Clinically normal apical tissues', 'Normal').replace('Localized symptomatic apical periodontitis', 'Symptomatic AP').replace('Localized asymptomatic apical periodontitis', 'Asymptomatic AP').replace('Apical periodontitis with sinus tract', 'Sinus tract').replace('Apical periodontitis with systemic involvement', 'Systemic').replace('Inconclusive apical condition', 'Inconclusive'),
-    value: casos.filter(c => c.AEDE_apical_FINAL === opcion).length,
+    value: casos.filter(c => (c.AEDE_apical_FINAL || c.AEDE_apical_IA) === opcion).length,
   }));
 
   // 1. Concordancia entre validadores principales (JEN vs SEG)
