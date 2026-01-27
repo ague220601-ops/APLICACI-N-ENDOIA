@@ -1,4 +1,4 @@
-// Clasificaciones AEDE/ESE 2025 - Gold Standard
+// Clasificaciones AAE/ESE 2025 - Gold Standard
 export const OPCIONES_PULPAR = [
   "Clinically normal pulp",
   "Hypersensitive pulp",
