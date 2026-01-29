@@ -178,14 +178,16 @@ export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags:
   const heatPain = isYes(data.pain_to_heat);
   const percPain = isYes(data.percussion_pain_yesno);
   const sinusTract = isYes(data.sinus_tract_present);
+  
+const depth = (data.depth_of_caries || "").toString().toLowerCase().trim();
+  
+const cariesProfunda =
+  depth.includes("profunda") ||
+  depth.includes("deep") ||
+  depth.includes("media") ||
+  depth.includes("moderate") ||
+  depth.includes("dentinaria_media");
 
-  const depth = (data.depth_of_caries || "").toString().toLowerCase();
-
-  const cariesProfunda =
-    depth.includes("profunda") ||
-    depth.includes("media") ||
-    depth.includes("deep") ||
-    depth.includes("moderate");
 
   const cariesEsmalte =
     depth.includes("superficial") ||
