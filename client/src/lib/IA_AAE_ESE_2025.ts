@@ -161,6 +161,8 @@ function pdlIsWidened(data: CaseData): boolean {
 
 export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags: string[] } {
   const flags: string[] = [];
+  flags.push("DEBUG: MOTOR 2025 ACTIVO v1");
+
 
   const prev = normalizePreviousTreatment(data.previous_treatment);
   const hasApicalRad = hasApicalRadiolucency(data, flags);
@@ -285,6 +287,8 @@ if (increasedCold || (linger !== null && linger > 0 && linger <= 5)) {
 }
 
   // ---------------- 6. Clinically Normal Pulp ----------------
+  
+flags.push(`DEBUG: cold=${data.thermal_cold_response} linger=${data.lingering_pain_seconds} depth=${data.depth_of_caries} tipo=${data.tipo_dolor} cariesProfunda=${cariesProfunda}`);
 
   if (!spontPain && !percPain && !hasApicalRad && !sinusTract) {
     return { diagnosis: "clinically_normal_pulp", flags };
