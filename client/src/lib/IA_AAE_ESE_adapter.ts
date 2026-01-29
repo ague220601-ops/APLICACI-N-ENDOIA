@@ -68,20 +68,14 @@ interface ResultadoIA {
 function normalizeDepthOfCaries(profundidad?: string): string {
   if (!profundidad) return "none";
   const p = profundidad.toLowerCase().trim();
-
-  // Sinónimos desde BD / formularios antiguos
-  if (p.includes("dentinaria_media") || p.includes("media")) return "moderate";
-  if (p.includes("dentinaria_profunda") || p.includes("profunda")) return "deep";
-  if (p.includes("muy_profunda") || p.includes("extrema") || p.includes("extreme")) return "extreme";
-  if (p.includes("superficial") || p.includes("esmalt") || p.includes("enamel") || p.includes("shallow")) return "shallow";
-
-  // Ya contemplados
+  
+  if (p === "extrema" || p === "extreme") return "extreme";
+  if (p === "profunda" || p === "deep") return "deep";
   if (p === "moderada" || p === "moderate") return "moderate";
-  if (p === "deep") return "deep";
-
+  if (p === "superficial" || p === "shallow") return "shallow";
+  
   return "none";
 }
-
 
 /**
  * Convierte datos del formulario al formato CaseData del motor AAE-ESE 2025
@@ -116,23 +110,20 @@ function convertirDatosAAE_ESE(datos: DatosClinico): CaseData {
     estimatedPAI = "1";
   }
 
-// PDL widening es un hallazgo radiográfico.
-// No debe inferirse a partir de síntomas (percusión).
-// Si no tenemos un campo específico para PDL, lo dejamos como "none".
-let pdlWidening: string = "none";
-
-// Si quieres permitirlo en el futuro, crea un campo en el formulario:
-// datos.pdlWidening (none/mild/moderate/severe) y aquí lo mapeas.
-// Ejemplo (solo si existe):
-// if (datos.pdlWidening) pdlWidening = datos.pdlWidening;
-
+  // Estimar ensanchamiento PDL
+  let pdlWidening: string;
+  if (datos.radiolucidezApical === "si") {
+    pdlWidening = "moderate";
+  } else if (datos.percusionDolor === "si") {
+    pdlWidening = "mild";
+  } else {
+    pdlWidening = "none";
+  }
 
   return {
     spontaneous_pain_yesno: datos.dolorEspontaneo === "si" ? "yes" : "no",
     thermal_cold_response: thermalColdResponse,
-   const lingerClean = (datos.lingeringSeg || "0").toString().replace(/[^\d]/g, "");
-...
-lingering_pain_seconds: lingerClean === "" ? "0" : lingerClean,
+    lingering_pain_seconds: datos.lingeringSeg || "0",
     percussion_pain_yesno: datos.percusionDolor === "si" ? "yes" : "no",
     apical_palpation_pain: datos.apicalPalpationPain === "si" ? "yes" : "no",
     sinus_tract_present: datos.sinusTractPresent === "si" ? "yes" : "no",
