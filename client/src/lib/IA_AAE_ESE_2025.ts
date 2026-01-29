@@ -281,10 +281,6 @@ if (increasedCold || (linger !== null && linger > 0 && linger <= 5)) {
   // Si hay caries profunda + sensibilidad corta → mild_pulpitis
   return { diagnosis: "mild_pulpitis", flags };
 }
-// Dolor provocado moderado (6–24s) sin caries profunda → estado pulpar no normal (zona gris)
-if (!cariesProfunda && linger !== null && linger >= 6 && linger < 25) {
-  return { diagnosis: "inconclusive_pulp_status", flags };
-}
 
   // ---------------- 6. Clinically Normal Pulp ----------------
 
