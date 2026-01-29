@@ -161,8 +161,6 @@ function pdlIsWidened(data: CaseData): boolean {
 
 export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags: string[] } {
   const flags: string[] = [];
-  flags.push("DEBUG: MOTOR 2025 ACTIVO v1");
-
 
   const prev = normalizePreviousTreatment(data.previous_treatment);
   const hasApicalRad = hasApicalRadiolucency(data, flags);
@@ -180,17 +178,14 @@ export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags:
   const heatPain = isYes(data.pain_to_heat);
   const percPain = isYes(data.percussion_pain_yesno);
   const sinusTract = isYes(data.sinus_tract_present);
-  
-  const depth = (data.depth_of_caries || "").toString().toLowerCase().trim();
 
-const cariesProfunda =
-  depth.includes("profunda") ||
-  depth.includes("deep") ||
-  depth.includes("media") ||
-  depth.includes("moderate") ||
-  depth.includes("dentinaria_media"); // <-- CLAVE para tus casos
+  const depth = (data.depth_of_caries || "").toString().toLowerCase();
 
-
+  const cariesProfunda =
+    depth.includes("profunda") ||
+    depth.includes("media") ||
+    depth.includes("deep") ||
+    depth.includes("moderate");
 
   const cariesEsmalte =
     depth.includes("superficial") ||
@@ -257,38 +252,35 @@ const cariesProfunda =
 
   // ---------------- 3. Severe Pulpitis ----------------
 
-const prolongedPain =
-  (linger !== null && linger >= 25) ||
-  data.tipo_dolor === "dolor_provocado_largo";
+  const prolongedPain =
+    (linger !== null && linger > 5) ||
+    data.tipo_dolor === "dolor_provocado_largo";
 
-if (spontPain || prolongedPain || heatPain) {
-  return { diagnosis: "severe_pulpitis", flags };
-}
-
+  if (spontPain || prolongedPain || heatPain) {
+    return { diagnosis: "severe_pulpitis", flags };
+  }
 
   // ---------------- 4. Mild Pulpitis ----------------
 
-if (
-  (cariesProfunda || prev === "deep_restoration") &&
-  (increasedCold || (linger !== null && linger > 0 && linger < 25))
-) {
-  return { diagnosis: "mild_pulpitis", flags };
-}
-
-
- // ---------------- 5. Hypersensitive Pulp ----------------
-// Hipersensibilidad: respuesta aumentada o dolor corto (≤5s) SIN caries profunda
-if (increasedCold || (linger !== null && linger > 0 && linger <= 5)) {
-  if (!cariesProfunda) {
-    return { diagnosis: "hypersensitive_pulp", flags };
+  if (
+    (cariesProfunda || prev === "deep_restoration") &&
+    (increasedCold || (linger !== null && linger > 0 && linger <= 5))
+  ) {
+    return { diagnosis: "mild_pulpitis", flags };
   }
-  // Si hay caries profunda + sensibilidad corta → mild_pulpitis
-  return { diagnosis: "mild_pulpitis", flags };
-}
+
+  // ---------------- 5. Hypersensitive Pulp ----------------
+
+  if (increasedCold || (linger !== null && linger > 0 && linger <= 5)) {
+    if (!cariesProfunda) {
+      // Sin caries profunda → hipersensibilidad (cuellos, recesión, etc.)
+      return { diagnosis: "hypersensitive_pulp", flags };
+    }
+    // Si hay caries profunda + sensibilidad corta → mild_pulpitis
+    return { diagnosis: "mild_pulpitis", flags };
+  }
 
   // ---------------- 6. Clinically Normal Pulp ----------------
-  
-flags.push(`DEBUG: cold=${data.thermal_cold_response} linger=${data.lingering_pain_seconds} depth=${data.depth_of_caries} tipo=${data.tipo_dolor} cariesProfunda=${cariesProfunda}`);
 
   if (!spontPain && !percPain && !hasApicalRad && !sinusTract) {
     return { diagnosis: "clinically_normal_pulp", flags };
