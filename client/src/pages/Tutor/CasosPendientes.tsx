@@ -96,7 +96,7 @@ export default function CasosPendientes() {
             Casos Pendientes
           </h1>
           <p className="text-muted-foreground mt-1">
-            Valida diagnósticos según AEDE/ESE 2025
+            Valida diagnósticos según AAE-ESE 2025
           </p>
         </div>
         <Badge variant="secondary" className="gap-1">
@@ -167,7 +167,7 @@ export default function CasosPendientes() {
               <CardHeader>
                 <CardTitle>Casos a Validar ({total})</CardTitle>
                 <CardDescription>
-                  Haz clic en "Validar" para revisar los datos clínicos y asignar clasificación AEDE/ESE
+                  Haz clic en "Validar" para revisar los datos clínicos y asignar clasificación AAE-ESE 2025
                 </CardDescription>
               </CardHeader>
               <CardContent>
