@@ -68,14 +68,20 @@ interface ResultadoIA {
 function normalizeDepthOfCaries(profundidad?: string): string {
   if (!profundidad) return "none";
   const p = profundidad.toLowerCase().trim();
-  
-  if (p === "extrema" || p === "extreme") return "extreme";
-  if (p === "profunda" || p === "deep") return "deep";
+
+  // Sinónimos desde BD / formularios antiguos
+  if (p.includes("dentinaria_media") || p.includes("media")) return "moderate";
+  if (p.includes("dentinaria_profunda") || p.includes("profunda")) return "deep";
+  if (p.includes("muy_profunda") || p.includes("extrema") || p.includes("extreme")) return "extreme";
+  if (p.includes("superficial") || p.includes("esmalt") || p.includes("enamel") || p.includes("shallow")) return "shallow";
+
+  // Ya contemplados
   if (p === "moderada" || p === "moderate") return "moderate";
-  if (p === "superficial" || p === "shallow") return "shallow";
-  
+  if (p === "deep") return "deep";
+
   return "none";
 }
+
 
 /**
  * Convierte datos del formulario al formato CaseData del motor AAE-ESE 2025
@@ -123,7 +129,9 @@ function convertirDatosAAE_ESE(datos: DatosClinico): CaseData {
   return {
     spontaneous_pain_yesno: datos.dolorEspontaneo === "si" ? "yes" : "no",
     thermal_cold_response: thermalColdResponse,
-    lingering_pain_seconds: datos.lingeringSeg || "0",
+   const lingerClean = (datos.lingeringSeg || "0").toString().replace(/[^\d]/g, "");
+...
+lingering_pain_seconds: lingerClean === "" ? "0" : lingerClean,
     percussion_pain_yesno: datos.percusionDolor === "si" ? "yes" : "no",
     apical_palpation_pain: datos.apicalPalpationPain === "si" ? "yes" : "no",
     sinus_tract_present: datos.sinusTractPresent === "si" ? "yes" : "no",
