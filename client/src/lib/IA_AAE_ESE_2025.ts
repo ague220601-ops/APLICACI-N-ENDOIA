@@ -181,14 +181,15 @@ export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags:
   const percPain = isYes(data.percussion_pain_yesno);
   const sinusTract = isYes(data.sinus_tract_present);
   
-const depth = (data.depth_of_caries || "").toString().toLowerCase().trim();
-  
+  const depth = (data.depth_of_caries || "").toString().toLowerCase().trim();
+
 const cariesProfunda =
   depth.includes("profunda") ||
   depth.includes("deep") ||
   depth.includes("media") ||
   depth.includes("moderate") ||
-  depth.includes("dentinaria_media");
+  depth.includes("dentinaria_media"); // <-- CLAVE para tus casos
+
 
 
   const cariesEsmalte =
@@ -256,7 +257,6 @@ const cariesProfunda =
 
   // ---------------- 3. Severe Pulpitis ----------------
 
-// Antes: linger > 5  (demasiado agresivo)
 const prolongedPain =
   (linger !== null && linger >= 25) ||
   data.tipo_dolor === "dolor_provocado_largo";
