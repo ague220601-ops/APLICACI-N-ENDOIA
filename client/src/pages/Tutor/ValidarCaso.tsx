@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, CheckCircle2, Loader2, AlertCircle, Stethoscope, Activity, X } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, AlertCircle, Stethoscope, Activity, X, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { OPCIONES_PULPAR, OPCIONES_APICAL, getTutorTokenFromEmail } from "@/lib/classifications";
 import { enviarLabelTutor } from "@/lib/api";
+import { getRadiographs, getRadiographPublicUrl, type Radiograph } from "@/lib/radiographs";
 
 function toNumber(value: number | string | null | undefined): number {
   if (value === null || value === undefined || value === '') return 0;
@@ -37,6 +38,26 @@ export default function ValidarCaso() {
   const [apicalSeleccionado, setApicalSeleccionado] = useState<string>("");
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [radiografias, setRadiografias] = useState<Radiograph[]>([]);
+  const [cargandoRads, setCargandoRads] = useState(false);
+
+  useEffect(() => {
+    if (case_id) {
+      cargarRadiografias();
+    }
+  }, [case_id]);
+
+  async function cargarRadiografias() {
+    setCargandoRads(true);
+    try {
+      const rads = await getRadiographs(case_id!);
+      setRadiografias(rads);
+    } catch (err) {
+      console.error("Error cargando radiografías:", err);
+    } finally {
+      setCargandoRads(false);
+    }
+  }
 
   if (!caso || !case_id) {
     return (
@@ -139,6 +160,53 @@ export default function ValidarCaso() {
                 <p className="text-sm text-muted-foreground">Fecha registro</p>
                 <p className="text-lg font-medium">{caso.date || caso.registro_fecha || 'N/A'}</p>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ImageIcon className="w-5 h-5" />
+                Radiografías del Caso
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {cargandoRads ? (
+                <div className="flex justify-center p-8">
+                  <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                </div>
+              ) : radiografias.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {radiografias.map((rad) => (
+                    <div key={rad.rad_id} className="space-y-2 border rounded-lg p-2 bg-black/5">
+                      <div className="flex justify-between items-center px-1">
+                        <Badge variant="secondary" className="capitalize">
+                          {rad.momento === 'baseline' ? 'Inicial' : rad.momento}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">{rad.fecha}</span>
+                      </div>
+                      <div className="aspect-square bg-black rounded-md overflow-hidden flex items-center justify-center">
+                        <img
+                          src={getRadiographPublicUrl(rad.filepath)}
+                          alt={`Radiografía ${rad.momento}`}
+                          className="max-w-full max-h-full object-contain hover:scale-110 transition-transform cursor-pointer"
+                          onClick={() => window.open(getRadiographPublicUrl(rad.filepath), '_blank')}
+                        />
+                      </div>
+                      {rad.tipo && (
+                        <p className="text-[10px] text-center uppercase tracking-wider text-muted-foreground font-semibold">
+                          {rad.tipo}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center p-8 bg-muted/50 rounded-lg border-2 border-dashed">
+                  <ImageIcon className="w-10 h-10 mx-auto text-muted-foreground opacity-20" />
+                  <p className="text-muted-foreground mt-2">No hay radiografías subidas para este caso</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
