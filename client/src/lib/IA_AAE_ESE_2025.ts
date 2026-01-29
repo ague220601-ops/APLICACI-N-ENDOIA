@@ -298,7 +298,9 @@ export function diagnoseApical(
   const sinusTract = isYes(data.sinus_tract_present);
   const systemic = isYes(data.systemic_involvement);
   const hasApicalRad = hasApicalRadiolucency(data, flags);
+
   const pdlWidened = pdlIsWidened(data);
+  const pdlMildOnly = pdlIsMildOnly(data);
 
   const prev = normalizePreviousTreatment(data.previous_treatment);
   const isPreviouslyTreated =
@@ -309,7 +311,7 @@ export function diagnoseApical(
   const diamBase = toNumber(data.vision_lesion_diam_mm_baseline);
   const diamFollow = toNumber(data.vision_lesion_diam_mm_followup);
 
-  // 1. Systemic involvement
+  // 1) Systemic involvement
   if (systemic) {
     return {
       diagnosis: "apical_periodontitis_with_systemic_involvement",
@@ -317,7 +319,7 @@ export function diagnoseApical(
     };
   }
 
-  // 2. Sinus tract
+  // 2) Sinus tract
   if (sinusTract) {
     return {
       diagnosis: "localized_apical_periodontitis_with_sinus_tract",
@@ -325,18 +327,9 @@ export function diagnoseApical(
     };
   }
 
-  // 3. Symptomatic Apical Periodontitis (SAP)
-  // CLAVE 2025: si hay dolor a la percusión y la pulpa está enferma (necrosis/severe/mild avanzada),
-  // es SAP aunque todavía no se vea radiolucidez clara.
-  const pulpDiseased = [
-    "pulp_necrosis",
-    "severe_pulpitis",
-    "mild_pulpitis",
-    "previously_initiated_root_canal_treatment",
-    "previously_obturated_root_canal",
-  ].includes(pulpDiag);
-
+  // 3) Dolor mecánico (percusión/palpación)
   if (percPain || apicalPalp) {
+    // 3A) Si hay radiolucidez / PAI ≥3 => SAP
     if (hasApicalRad) {
       return {
         diagnosis: "localized_symptomatic_apical_periodontitis",
@@ -344,16 +337,34 @@ export function diagnoseApical(
       };
     }
 
-    if (pulpDiseased) {
+    // 3B) Si NO hay radiolucidez:
+    const pulpClearlyDiseased =
+      pulpDiag === "pulp_necrosis" ||
+      pulpDiag === "severe_pulpitis" ||
+      pulpDiag === "previously_initiated_root_canal_treatment" ||
+      pulpDiag === "previously_obturated_root_canal";
+
+    if (pulpClearlyDiseased) {
       return {
         diagnosis: "localized_symptomatic_apical_periodontitis",
         flags,
       };
     }
 
-    // Pulpa clínicamente sana/hipersensible + dolor percusión → Apical Hypersensitivity (origen no endodóntico)
+    // Pulpitis leve + dolor mecánico sin RL: más coherente con "apical hypersensitivity"
+    if (pulpDiag === "mild_pulpitis") {
+      flags.push(
+        "Dolor a la percusión/palpación sin radiolucidez con pulpitis leve: valorar origen no endodóntico (hiperoclusión/periodontal) o TAB transitorio."
+      );
+      return {
+        diagnosis: "apical_hypersensitivity",
+        flags,
+      };
+    }
+
+    // Pulpa sana/hipersensible + dolor mecánico => apical hypersensitivity
     flags.push(
-      "Dolor a la percusión con pulpa sana/hipersensible: posible origen no endodóntico (trauma oclusal, sinusitis, etc.)."
+      "Dolor a la percusión/palpación con pulpa sana/hipersensible: posible origen no endodóntico (trauma oclusal, periodontal, sinusitis, etc.)."
     );
     return {
       diagnosis: "apical_hypersensitivity",
@@ -361,7 +372,7 @@ export function diagnoseApical(
     };
   }
 
-  // 4. Asymptomatic Apical Periodontitis
+  // 4) Asymptomatic Apical Periodontitis
   if (!percPain && !apicalPalp && hasApicalRad) {
     return {
       diagnosis: "localized_asymptomatic_apical_periodontitis",
@@ -369,7 +380,7 @@ export function diagnoseApical(
     };
   }
 
-  // 5. Healing (disminución de PAI o tamaño de lesión en dientes ya tratados)
+  // 5) Healing (disminución de PAI o tamaño de lesión en dientes ya tratados)
   if (
     isPreviouslyTreated &&
     paiBase !== null &&
@@ -394,7 +405,19 @@ export function diagnoseApical(
     };
   }
 
-  // 6. Clinically normal apical tissues
+  // 6) PDL widening leve SIN dolor y SIN radiolucidez
+  // Encaja mejor con "apical hypersensitivity" (hiperoclusión/trauma/periodontal) que con inconclusive. :contentReference[oaicite:1]{index=1}
+  if (!percPain && !apicalPalp && !hasApicalRad && pdlMildOnly && !sinusTract && !systemic) {
+    flags.push(
+      "Ensanchamiento leve del PDL sin dolor y sin radiolucidez: compatible con hipersensibilidad apical (posible hiperoclusión/trauma/periodontal)."
+    );
+    return {
+      diagnosis: "apical_hypersensitivity",
+      flags,
+    };
+  }
+
+  // 7) Clinically normal apical tissues
   if (!percPain && !apicalPalp && !hasApicalRad && !pdlWidened && !sinusTract && !systemic) {
     return {
       diagnosis: "clinically_normal_apical_tissues",
@@ -402,7 +425,7 @@ export function diagnoseApical(
     };
   }
 
-  // 7. Inconclusive
+  // 8) Inconclusive
   return {
     diagnosis: "inconclusive_apical_condition",
     flags,
