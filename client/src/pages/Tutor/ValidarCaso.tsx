@@ -138,7 +138,7 @@ export default function ValidarCaso() {
         <AlertCircle className="w-4 h-4" />
         <AlertDescription>
           <strong>Importante:</strong> Solo puedes ver datos clínicos sin diagnósticos IA. 
-          Asigna las clasificaciones según tu criterio profesional y la clasificación AEDE/ESE 2025.
+          Asigna las clasificaciones según tu criterio profesional y la clasificación AAE-ESE 2025.
         </AlertDescription>
       </Alert>
 
@@ -389,7 +389,7 @@ export default function ValidarCaso() {
         <div className="lg:col-span-1">
           <Card className="sticky top-6 border-2 border-primary/20">
             <CardHeader>
-              <CardTitle>Diagnóstico AEDE/ESE 2025</CardTitle>
+              <CardTitle>Diagnóstico AAE-ESE 2025</CardTitle>
               <CardDescription>
                 Asigna las clasificaciones oficiales (Gold Standard)
               </CardDescription>
