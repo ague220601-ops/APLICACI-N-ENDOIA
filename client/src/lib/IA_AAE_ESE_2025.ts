@@ -252,33 +252,39 @@ export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags:
 
   // ---------------- 3. Severe Pulpitis ----------------
 
-  const prolongedPain =
-    (linger !== null && linger > 5) ||
-    data.tipo_dolor === "dolor_provocado_largo";
+// Antes: linger > 5  (demasiado agresivo)
+const prolongedPain =
+  (linger !== null && linger >= 25) ||
+  data.tipo_dolor === "dolor_provocado_largo";
 
-  if (spontPain || prolongedPain || heatPain) {
-    return { diagnosis: "severe_pulpitis", flags };
-  }
+if (spontPain || prolongedPain || heatPain) {
+  return { diagnosis: "severe_pulpitis", flags };
+}
+
 
   // ---------------- 4. Mild Pulpitis ----------------
 
-  if (
-    (cariesProfunda || prev === "deep_restoration") &&
-    (increasedCold || (linger !== null && linger > 0 && linger <= 5))
-  ) {
-    return { diagnosis: "mild_pulpitis", flags };
-  }
+if (
+  (cariesProfunda || prev === "deep_restoration") &&
+  (increasedCold || (linger !== null && linger > 0 && linger < 25))
+) {
+  return { diagnosis: "mild_pulpitis", flags };
+}
 
-  // ---------------- 5. Hypersensitive Pulp ----------------
 
-  if (increasedCold || (linger !== null && linger > 0 && linger <= 5)) {
-    if (!cariesProfunda) {
-      // Sin caries profunda → hipersensibilidad (cuellos, recesión, etc.)
-      return { diagnosis: "hypersensitive_pulp", flags };
-    }
-    // Si hay caries profunda + sensibilidad corta → mild_pulpitis
-    return { diagnosis: "mild_pulpitis", flags };
+ // ---------------- 5. Hypersensitive Pulp ----------------
+// Hipersensibilidad: respuesta aumentada o dolor corto (≤5s) SIN caries profunda
+if (increasedCold || (linger !== null && linger > 0 && linger <= 5)) {
+  if (!cariesProfunda) {
+    return { diagnosis: "hypersensitive_pulp", flags };
   }
+  // Si hay caries profunda + sensibilidad corta → mild_pulpitis
+  return { diagnosis: "mild_pulpitis", flags };
+}
+// Dolor provocado moderado (6–24s) sin caries profunda → estado pulpar no normal (zona gris)
+if (!cariesProfunda && linger !== null && linger >= 6 && linger < 25) {
+  return { diagnosis: "inconclusive_pulp_status", flags };
+}
 
   // ---------------- 6. Clinically Normal Pulp ----------------
 
