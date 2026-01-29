@@ -116,15 +116,16 @@ function convertirDatosAAE_ESE(datos: DatosClinico): CaseData {
     estimatedPAI = "1";
   }
 
-  // Estimar ensanchamiento PDL
-  let pdlWidening: string;
-  if (datos.radiolucidezApical === "si") {
-    pdlWidening = "moderate";
-  } else if (datos.percusionDolor === "si") {
-    pdlWidening = "mild";
-  } else {
-    pdlWidening = "none";
-  }
+// PDL widening es un hallazgo radiográfico.
+// No debe inferirse a partir de síntomas (percusión).
+// Si no tenemos un campo específico para PDL, lo dejamos como "none".
+let pdlWidening: string = "none";
+
+// Si quieres permitirlo en el futuro, crea un campo en el formulario:
+// datos.pdlWidening (none/mild/moderate/severe) y aquí lo mapeas.
+// Ejemplo (solo si existe):
+// if (datos.pdlWidening) pdlWidening = datos.pdlWidening;
+
 
   return {
     spontaneous_pain_yesno: datos.dolorEspontaneo === "si" ? "yes" : "no",
