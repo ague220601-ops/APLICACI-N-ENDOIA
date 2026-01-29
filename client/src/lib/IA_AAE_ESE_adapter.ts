@@ -68,14 +68,20 @@ interface ResultadoIA {
 function normalizeDepthOfCaries(profundidad?: string): string {
   if (!profundidad) return "none";
   const p = profundidad.toLowerCase().trim();
-  
-  if (p === "extrema" || p === "extreme") return "extreme";
-  if (p === "profunda" || p === "deep") return "deep";
+
+  // BD / formularios reales
+  if (p.includes("dentinaria_media") || p.includes("media")) return "moderate";
+  if (p.includes("dentinaria_profunda") || p.includes("profunda")) return "deep";
+  if (p.includes("muy_profunda") || p.includes("extrema") || p.includes("extreme")) return "extreme";
+  if (p.includes("superficial") || p.includes("esmalt") || p.includes("enamel") || p.includes("shallow")) return "shallow";
+
+  // Ya normalizados
   if (p === "moderada" || p === "moderate") return "moderate";
-  if (p === "superficial" || p === "shallow") return "shallow";
-  
+  if (p === "deep") return "deep";
+
   return "none";
 }
+
 
 /**
  * Convierte datos del formulario al formato CaseData del motor AAE-ESE 2025
