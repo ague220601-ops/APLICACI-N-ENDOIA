@@ -159,37 +159,38 @@ function pdlIsWidened(data: CaseData): boolean {
 
 // -------------------- Diagnóstico pulpar --------------------
 
-export function diagnosePulp(
-  data: CaseData
-): { diagnosis: PulpDiagnosis; flags: string[] } {
+export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags: string[] } {
   const flags: string[] = [];
 
   const prev = normalizePreviousTreatment(data.previous_treatment);
   const hasApicalRad = hasApicalRadiolucency(data, flags);
 
   const spontPain =
-    isYes(data.spontaneous_pain_yesno) || data.tipo_dolor === "dolor_espontaneo";
+    isYes(data.spontaneous_pain_yesno) ||
+    data.tipo_dolor === "dolor_espontaneo";
 
-  const coldResp = (data.thermal_cold_response || "").toString().toLowerCase().trim();
+  const coldResp = (data.thermal_cold_response || "")
+    .toString()
+    .toLowerCase()
+    .trim();
+
   const linger = toNumber(data.lingering_pain_seconds);
-
   const heatPain = isYes(data.pain_to_heat);
   const percPain = isYes(data.percussion_pain_yesno);
-  const palpPain = isYes(data.apical_palpation_pain);
   const sinusTract = isYes(data.sinus_tract_present);
 
   const depth = (data.depth_of_caries || "").toString().toLowerCase();
 
-  const cariesModerate = depth.includes("media") || depth.includes("moderate");
-  const cariesDeep = depth.includes("profunda") || depth.includes("deep");
-  const cariesExtreme =
-    depth.includes("extrema") || depth.includes("extreme") || depth.includes("muy_profunda");
-
-  // útil para "no caries profunda" en hypersensitive:
-  const cariesAtLeastModerate = cariesModerate || cariesDeep || cariesExtreme;
+  const cariesProfunda =
+    depth.includes("profunda") ||
+    depth.includes("media") ||
+    depth.includes("deep") ||
+    depth.includes("moderate");
 
   const cariesEsmalte =
-    depth.includes("superficial") || depth.includes("esmalt") || depth.includes("enamel");
+    depth.includes("superficial") ||
+    depth.includes("esmalt") ||
+    depth.includes("enamel");
 
   const noColdResponse =
     coldResp === "0" ||
@@ -199,7 +200,9 @@ export function diagnosePulp(
     coldResp === "no";
 
   const increasedCold =
-    coldResp === "2" || coldResp === "2_aumentada" || coldResp === "increased";
+    coldResp === "2" ||
+    coldResp === "2_aumentada" ||
+    coldResp === "increased";
 
   const hasVPT = [
     "vital_indirect_cap",
@@ -208,8 +211,7 @@ export function diagnosePulp(
     "full_pulpotomy",
   ].includes(prev);
 
-  // (si lo usas luego bien; si no, bórralo)
-  // const trauma = (data.trauma_history || "").toString().trim() !== "";
+  const trauma = (data.trauma_history || "").toString().trim() !== "";
 
   // ---------------- 1. Tratamientos previos "especiales" ----------------
 
@@ -223,67 +225,70 @@ export function diagnosePulp(
     return { diagnosis: "previous_regenerative_endodontic_treatment", flags };
   }
 
-  // ---------------- 2. Pulp Necrosis / Inconclusive ----------------
+  // ---------------- 2. Pulp Necrosis ----------------
 
-  const signsOfInfection = hasApicalRad || sinusTract || isYes(data.systemic_involvement);
+  const signsOfInfection =
+    hasApicalRad || sinusTract || isYes(data.systemic_involvement);
 
   if (noColdResponse) {
-    // Si no responde + hay signos de infección o dolor apical -> necrosis
-    if (signsOfInfection || percPain || palpPain) {
+    if (signsOfInfection) {
+      return { diagnosis: "pulp_necrosis", flags };
+    }
+    if (percPain || isYes(data.apical_palpation_pain)) {
       return { diagnosis: "pulp_necrosis", flags };
     }
 
-    // Ausencia de respuesta al frío sin síntomas y sin caries moderada/profunda/extrema ni VPT → inconcluso
-    if (!spontPain && !cariesAtLeastModerate && !hasVPT) {
+    // Ausencia de respuesta al frío sin síntomas y sin caries profunda / VPT → inconcluso
+    if (!spontPain && !cariesProfunda && !hasVPT) {
       flags.push(
-        "Ausencia de respuesta al frío sin signos claros de infección ni caries relevante: estado pulpar inconcluso (posible calcificación o necrosis estéril)."
+        "Ausencia de respuesta al frío sin signos claros de infección ni caries profunda: estado pulpar inconcluso (posible calcificación o necrosis estéril)."
       );
       return { diagnosis: "inconclusive_pulp_status", flags };
     }
 
-    // Por defecto, si no responde y hay historia de caries/VPT, inclinamos a necrosis
+    // Por defecto, si no responde y hay historia previa (caries/VPT), inclinamos a necrosis
     return { diagnosis: "pulp_necrosis", flags };
   }
 
   // ---------------- 3. Severe Pulpitis ----------------
-  // Tu política: severa si linger >=25 o dolor provocado largo, o espontáneo, o calor,
-  // y también si caries EXTREMA por sí misma (progresión anatómica).
-  const veryProlongedPain =
-    (linger !== null && linger >= 25) || data.tipo_dolor === "dolor_provocado_largo";
 
-  if (cariesExtreme || spontPain || heatPain || veryProlongedPain) {
+  const prolongedPain =
+    (linger !== null && linger > 5) ||
+    data.tipo_dolor === "dolor_provocado_largo";
+
+  if (spontPain || prolongedPain || heatPain) {
     return { diagnosis: "severe_pulpitis", flags };
   }
 
   // ---------------- 4. Mild Pulpitis ----------------
-  // 0–5 = mild symptoms; 6–24 = moderate symptoms (pero no severe por sí solo)
-  const linger0to5 = linger !== null && linger > 0 && linger <= 5;
-  const linger6to24 = linger !== null && linger >= 6 && linger <= 24;
 
   if (
-    (cariesModerate || cariesDeep || prev === "deep_restoration") &&
-    (increasedCold || linger0to5 || linger6to24)
+    (cariesProfunda || prev === "deep_restoration") &&
+    (increasedCold || (linger !== null && linger > 0 && linger <= 5))
   ) {
     return { diagnosis: "mild_pulpitis", flags };
   }
 
   // ---------------- 5. Hypersensitive Pulp ----------------
-  // Solo si NO hay caries moderada/profunda/extrema (porque si la hay, encaja mejor en mild pulpitis).
-  if ((increasedCold || linger0to5) && !cariesAtLeastModerate) {
-    return { diagnosis: "hypersensitive_pulp", flags };
+
+  if (increasedCold || (linger !== null && linger > 0 && linger <= 5)) {
+    if (!cariesProfunda) {
+      // Sin caries profunda → hipersensibilidad (cuellos, recesión, etc.)
+      return { diagnosis: "hypersensitive_pulp", flags };
+    }
+    // Si hay caries profunda + sensibilidad corta → mild_pulpitis
+    return { diagnosis: "mild_pulpitis", flags };
   }
 
   // ---------------- 6. Clinically Normal Pulp ----------------
-  // Si no hay síntomas atribuibles a pulpa y sin hallazgos apicales
+
   if (!spontPain && !percPain && !hasApicalRad && !sinusTract) {
-    // Si además hay caries solo en esmalte o nada: normal
     return { diagnosis: "clinically_normal_pulp", flags };
   }
 
   flags.push("Diagnóstico pulpar incierto con los datos disponibles.");
   return { diagnosis: "inconclusive_pulp_status", flags };
 }
-
 
 // -------------------- Diagnóstico apical --------------------
 
@@ -298,9 +303,7 @@ export function diagnoseApical(
   const sinusTract = isYes(data.sinus_tract_present);
   const systemic = isYes(data.systemic_involvement);
   const hasApicalRad = hasApicalRadiolucency(data, flags);
-
   const pdlWidened = pdlIsWidened(data);
-  const pdlMildOnly = pdlIsMildOnly(data);
 
   const prev = normalizePreviousTreatment(data.previous_treatment);
   const isPreviouslyTreated =
@@ -311,7 +314,7 @@ export function diagnoseApical(
   const diamBase = toNumber(data.vision_lesion_diam_mm_baseline);
   const diamFollow = toNumber(data.vision_lesion_diam_mm_followup);
 
-  // 1) Systemic involvement
+  // 1. Systemic involvement
   if (systemic) {
     return {
       diagnosis: "apical_periodontitis_with_systemic_involvement",
@@ -319,7 +322,7 @@ export function diagnoseApical(
     };
   }
 
-  // 2) Sinus tract
+  // 2. Sinus tract
   if (sinusTract) {
     return {
       diagnosis: "localized_apical_periodontitis_with_sinus_tract",
@@ -327,9 +330,18 @@ export function diagnoseApical(
     };
   }
 
-  // 3) Dolor mecánico (percusión/palpación)
+  // 3. Symptomatic Apical Periodontitis (SAP)
+  // CLAVE 2025: si hay dolor a la percusión y la pulpa está enferma (necrosis/severe/mild avanzada),
+  // es SAP aunque todavía no se vea radiolucidez clara.
+  const pulpDiseased = [
+    "pulp_necrosis",
+    "severe_pulpitis",
+    "mild_pulpitis",
+    "previously_initiated_root_canal_treatment",
+    "previously_obturated_root_canal",
+  ].includes(pulpDiag);
+
   if (percPain || apicalPalp) {
-    // 3A) Si hay radiolucidez / PAI ≥3 => SAP
     if (hasApicalRad) {
       return {
         diagnosis: "localized_symptomatic_apical_periodontitis",
@@ -337,34 +349,16 @@ export function diagnoseApical(
       };
     }
 
-    // 3B) Si NO hay radiolucidez:
-    const pulpClearlyDiseased =
-      pulpDiag === "pulp_necrosis" ||
-      pulpDiag === "severe_pulpitis" ||
-      pulpDiag === "previously_initiated_root_canal_treatment" ||
-      pulpDiag === "previously_obturated_root_canal";
-
-    if (pulpClearlyDiseased) {
+    if (pulpDiseased) {
       return {
         diagnosis: "localized_symptomatic_apical_periodontitis",
         flags,
       };
     }
 
-    // Pulpitis leve + dolor mecánico sin RL: más coherente con "apical hypersensitivity"
-    if (pulpDiag === "mild_pulpitis") {
-      flags.push(
-        "Dolor a la percusión/palpación sin radiolucidez con pulpitis leve: valorar origen no endodóntico (hiperoclusión/periodontal) o TAB transitorio."
-      );
-      return {
-        diagnosis: "apical_hypersensitivity",
-        flags,
-      };
-    }
-
-    // Pulpa sana/hipersensible + dolor mecánico => apical hypersensitivity
+    // Pulpa clínicamente sana/hipersensible + dolor percusión → Apical Hypersensitivity (origen no endodóntico)
     flags.push(
-      "Dolor a la percusión/palpación con pulpa sana/hipersensible: posible origen no endodóntico (trauma oclusal, periodontal, sinusitis, etc.)."
+      "Dolor a la percusión con pulpa sana/hipersensible: posible origen no endodóntico (trauma oclusal, sinusitis, etc.)."
     );
     return {
       diagnosis: "apical_hypersensitivity",
@@ -372,7 +366,7 @@ export function diagnoseApical(
     };
   }
 
-  // 4) Asymptomatic Apical Periodontitis
+  // 4. Asymptomatic Apical Periodontitis
   if (!percPain && !apicalPalp && hasApicalRad) {
     return {
       diagnosis: "localized_asymptomatic_apical_periodontitis",
@@ -380,7 +374,7 @@ export function diagnoseApical(
     };
   }
 
-  // 5) Healing (disminución de PAI o tamaño de lesión en dientes ya tratados)
+  // 5. Healing (disminución de PAI o tamaño de lesión en dientes ya tratados)
   if (
     isPreviouslyTreated &&
     paiBase !== null &&
@@ -405,19 +399,7 @@ export function diagnoseApical(
     };
   }
 
-  // 6) PDL widening leve SIN dolor y SIN radiolucidez
-  // Encaja mejor con "apical hypersensitivity" (hiperoclusión/trauma/periodontal) que con inconclusive. :contentReference[oaicite:1]{index=1}
-  if (!percPain && !apicalPalp && !hasApicalRad && pdlMildOnly && !sinusTract && !systemic) {
-    flags.push(
-      "Ensanchamiento leve del PDL sin dolor y sin radiolucidez: compatible con hipersensibilidad apical (posible hiperoclusión/trauma/periodontal)."
-    );
-    return {
-      diagnosis: "apical_hypersensitivity",
-      flags,
-    };
-  }
-
-  // 7) Clinically normal apical tissues
+  // 6. Clinically normal apical tissues
   if (!percPain && !apicalPalp && !hasApicalRad && !pdlWidened && !sinusTract && !systemic) {
     return {
       diagnosis: "clinically_normal_apical_tissues",
@@ -425,7 +407,7 @@ export function diagnoseApical(
     };
   }
 
-  // 8) Inconclusive
+  // 7. Inconclusive
   return {
     diagnosis: "inconclusive_apical_condition",
     flags,
