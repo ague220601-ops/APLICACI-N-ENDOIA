@@ -184,11 +184,13 @@ export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags:
 const cariesProfunda =
   depth.includes("profunda") ||
   depth.includes("deep") ||
+  depth.includes("dentinaria_profunda");
+
+const cariesMedia =
   depth.includes("media") ||
   depth.includes("moderate") ||
   depth.includes("dentinaria_media");
-
-
+  
   const cariesEsmalte =
     depth.includes("superficial") ||
     depth.includes("esmalt") ||
@@ -255,22 +257,29 @@ const cariesProfunda =
   // ---------------- 3. Severe Pulpitis ----------------
 
   const prolongedPain =
-    (linger !== null && linger >= 25) ||
+    (linger !== null && linger >= 15) ||
     data.tipo_dolor === "dolor_provocado_largo";
 
-  if (spontPain || prolongedPain || heatPain) {
-    return { diagnosis: "severe_pulpitis", flags };
-  }
+  if (
+  spontPain ||
+  heatPain ||
+  prolongedPain ||
+  (increasedCold && linger !== null && linger >= 10)
+) {
+  return { diagnosis: "severe_pulpitis", flags };
+}
 
-  // ---------------- 4. Mild Pulpitis ----------------
-
- if (
-  (cariesProfunda || prev === "deep_restoration") &&
-  (increasedCold || (linger !== null && linger > 0 && linger < 25))
+ // ---------------- 4. Mild Pulpitis ----------------
+if (
+  (
+    cariesProfunda ||
+    prev === "deep_restoration" ||
+    (cariesMedia && prev !== "none")
+  ) &&
+  (increasedCold || (linger !== null && linger > 0 && linger < 15))
 ) {
   return { diagnosis: "mild_pulpitis", flags };
 }
-
 
   // ---------------- 5. Hypersensitive Pulp ----------------
 
