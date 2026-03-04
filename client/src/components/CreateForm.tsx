@@ -179,18 +179,26 @@ export default function CreateForm() {
         </div>
 
         <div>
-          <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
-            Duración dolor tras frío (segundos)
-          </label>
-          <input 
-            type="number" 
-            name="lingering_pain_seconds" 
-            placeholder="0-60"
-            onChange={handleChange} 
-            style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
-          />
-        </div>
+  <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
+    Duración dolor tras frío
+  </label>
 
+  <select
+    name="lingering_pain_seconds"   // mantenemos el mismo name para no tocar más
+    onChange={handleChange}
+    style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+    defaultValue=""
+  >
+    <option value="">Seleccione</option>
+    <option value="0">0 s (sin dolor / no lingering)</option>
+    <option value="1-5">1–5 s</option>
+    <option value="6-10">6–10 s</option>
+    <option value="11-15">11–15 s</option>
+    <option value=">15">&gt;15 s</option>
+    <option value="na">No evaluable / no se hizo</option>
+  </select>
+</div>
+        
         {/* ------------------------- HALLAZGOS CLÍNICOS -------------------------- */}
 
         <div>
