@@ -86,6 +86,22 @@ function normalizeDepthOfCaries(profundidad?: string): string {
 /**
  * Convierte datos del formulario al formato CaseData del motor AAE-ESE 2025
  */
+function normalizeLingerSeconds(raw?: string | null): number | null {
+  if (!raw) return 0;
+
+  const v = raw.toString().trim();
+
+  if (v === "na") return null;
+  if (v === "0") return 0;
+  if (v === "1-5") return 3;
+  if (v === "6-10") return 8;
+  if (v === "11-15") return 13;
+  if (v === ">15") return 20;
+
+  // por si llega "12" de algún sitio viejo
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+} 
 function convertirDatosAAE_ESE(datos: DatosClinico): CaseData {
   // Mapear respuesta al frío
   let thermalColdResponse: string;
@@ -129,7 +145,7 @@ function convertirDatosAAE_ESE(datos: DatosClinico): CaseData {
   return {
     spontaneous_pain_yesno: datos.dolorEspontaneo === "si" ? "yes" : "no",
     thermal_cold_response: thermalColdResponse,
-    lingering_pain_seconds: datos.lingeringSeg || "0",
+    lingering_pain_seconds: normalizeLingerSeconds(datos.lingeringSeg),
     percussion_pain_yesno: datos.percusionDolor === "si" ? "yes" : "no",
     apical_palpation_pain: datos.apicalPalpationPain === "si" ? "yes" : "no",
     sinus_tract_present: datos.sinusTractPresent === "si" ? "yes" : "no",
