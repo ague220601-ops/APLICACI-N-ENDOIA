@@ -325,17 +325,26 @@ export default function ClinicoView() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="lingeringSeg">Duración dolor tras frío (seg)</Label>
-                <Input
-                  id="lingeringSeg"
-                  data-testid="input-lingering"
-                  type="number"
-                  min="0"
-                  value={form.lingeringSeg}
-                  onChange={(e) => handleChange("lingeringSeg", e.target.value)}
-                  placeholder="0-60"
-                />
-              </div>
+  <Label htmlFor="lingeringSeg">Duración dolor tras frío</Label>
+
+  <Select
+    value={form.lingeringSeg}
+    onValueChange={(v) => handleChange("lingeringSeg", v)}
+  >
+    <SelectTrigger id="lingeringSeg">
+      <SelectValue placeholder="Seleccione" />
+    </SelectTrigger>
+
+    <SelectContent>
+      <SelectItem value="0">0 s (sin dolor / no lingering)</SelectItem>
+      <SelectItem value="1-5">1–5 s</SelectItem>
+      <SelectItem value="6-10">6–10 s</SelectItem>
+      <SelectItem value="11-15">11–15 s</SelectItem>
+      <SelectItem value=">15">&gt;15 s</SelectItem>
+      <SelectItem value="na">No evaluable / no se hizo</SelectItem>
+    </SelectContent>
+  </Select>
+</div> 
 
               <div className="space-y-2">
                 <Label htmlFor="percusionDolor">Dolor a percusión</Label>
