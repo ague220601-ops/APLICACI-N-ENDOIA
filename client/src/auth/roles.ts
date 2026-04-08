@@ -6,6 +6,7 @@ export const ROLE_BY_EMAIL: Record<string, UserRole> = {
   'segura.endoia@gmail.com': 'tutor',
   'sevillaendous@gmail.com': 'tutor',
   'ague220601@gmail.com': 'tutor',
+   'albertocfdez@gmail.com': 'tutor',
   'investigador.endoia@gmail.com': 'investigador',
   'ague2206@gmail.com': 'investigador',
 };
