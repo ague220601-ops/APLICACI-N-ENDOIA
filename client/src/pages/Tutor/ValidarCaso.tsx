@@ -26,7 +26,7 @@ function toNumber(value: number | string | null | undefined): number {
 }
 
 export default function ValidarCaso() {
-  const { user } = useAuth();
+ const { user, role } = useAuth();
   const params = useParams();
   const [, navigate] = useLocation();
   
@@ -289,7 +289,11 @@ export default function ValidarCaso() {
           </Card>
 
           {/* BLOQUE DE IA RADIOLÓGICA */}
-          <Card className="bg-blue-50 border-blue-200">
+          {role === 'investigador' && (
+  <Card className="bg-blue-50 border-blue-200">
+    ...
+  </Card>
+)}
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-blue-900">
                 <AlertCircle className="w-5 h-5" />
@@ -331,7 +335,11 @@ export default function ValidarCaso() {
           </Card>
 
           {/* BLOQUE DE COHERENCIA CLÍNICO – IA */}
-          <Card className="bg-orange-50 border-orange-200">
+         {role === 'investigador' && (
+  <Card className="bg-orange-50 border-orange-200">
+    ...
+  </Card>
+)}
             <CardHeader>
               <CardTitle className="text-orange-800">Coherencia Clínico – IA</CardTitle>
             </CardHeader>
