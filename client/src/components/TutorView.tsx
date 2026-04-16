@@ -14,7 +14,7 @@ import { CheckCircle2, Loader2, AlertCircle, FileCheck } from "lucide-react";
 import { obtenerPendientes, enviarLabelTutor, type CasoClinico } from "@/lib/api";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/auth/AuthContext";
-import { OPCIONES_PULPAR, OPCIONES_APICAL } from "@/lib/classifications";
+import { OPCIONES_PULPAR, OPCIONES_APICAL, getTutorTokenFromEmail } from "@/lib/classifications";
 
 interface Clasificaciones {
   pulpar: string;
@@ -30,15 +30,31 @@ export default function TutorView() {
   const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
-    if (!user || (role !== 'tutor' && role !== 'investigador')) return;
-    
-    (async () => {
+  if (!user || (role !== 'tutor' && role !== 'investigador')) return;
+
+  (async () => {
+    try {
       setCargando(true);
-      const data = await obtenerPendientes();
+
+      const token = getTutorTokenFromEmail(user?.email || '');
+      if (!token) {
+        console.error('Tutor no autorizado');
+        setPendientes([]);
+        return;
+      }
+
+      const tutorType: 'JEN' | 'SEG' | 'INV' = token as 'JEN' | 'SEG' | 'INV';
+
+      const data = await obtenerPendientes(tutorType);
       setPendientes(data);
+    } catch (error) {
+      console.error('Error cargando pendientes:', error);
+      setPendientes([]);
+    } finally {
       setCargando(false);
-    })();
-  }, [user, role]);
+    }
+  })();
+}, [user, role]);
 
   function handleChangePulpar(case_id: string, value: string) {
     setSeleccion(s => ({ 
@@ -60,15 +76,29 @@ export default function TutorView() {
     }));
   }
 
-  async function guardar(case_id: string) {
-    const clasificaciones = seleccion[case_id];
-    if (!clasificaciones?.pulpar || !clasificaciones?.apical) return;
-    
-    setGuardando(g => ({ ...g, [case_id]: true }));
-    await enviarLabelTutor(case_id, clasificaciones);
-    setGuardando(g => ({ ...g, [case_id]: false }));
-    setPendientes(prev => prev.filter(c => c.case_id !== case_id));
+ async function guardar(case_id: string) {
+  const clasificaciones = seleccion[case_id];
+  if (!clasificaciones?.pulpar || !clasificaciones?.apical) return;
+
+  const token = getTutorTokenFromEmail(user?.email || '');
+  if (!token) {
+    console.error('Tutor no autorizado');
+    return;
   }
+
+  const tutorType: 'JEN' | 'SEG' | 'INV' = token as 'JEN' | 'SEG' | 'INV';
+
+  setGuardando(g => ({ ...g, [case_id]: true }));
+
+  try {
+    await enviarLabelTutor(case_id, clasificaciones, tutorType);
+    setPendientes(prev => prev.filter(c => c.case_id !== case_id));
+  } catch (error) {
+    console.error('Error guardando validación:', error);
+  } finally {
+    setGuardando(g => ({ ...g, [case_id]: false }));
+  }
+}
 
   if (role !== 'tutor' && role !== 'investigador') {
     return (
