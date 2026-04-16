@@ -107,20 +107,31 @@ export async function enviarCasoNuevo(datosCaso: any) {
   }
 }
 
-export async function obtenerPendientes(): Promise<any[]> {
+export async function obtenerPendientes(
+  tutorType: 'JEN' | 'SEG' | 'INV'
+): Promise<any[]> {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('cases')
       .select('*')
-      .or('validado_JEN.is.null,validado_SEG.is.null,AEDE_pulpar_FINAL.is.null')
       .order('date', { ascending: false });
+
+    if (tutorType === 'JEN') {
+      query = query.is('validado_JEN', null);
+    } else if (tutorType === 'SEG') {
+      query = query.is('validado_SEG', null);
+    } else if (tutorType === 'INV') {
+      query = query.is('validado_INV', null);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Error obteniendo pendientes:", error);
       return [];
     }
-    
-    console.log("✅ Casos pendientes obtenidos:", data?.length || 0);
+
+    console.log(`✅ Casos pendientes para ${tutorType}:`, data?.length || 0);
     return data || [];
   } catch (err) {
     console.error("Error cargando pendientes:", err);
