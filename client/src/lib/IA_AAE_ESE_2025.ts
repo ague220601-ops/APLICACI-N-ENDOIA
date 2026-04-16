@@ -157,6 +157,22 @@ function pdlIsWidened(data: CaseData): boolean {
   return false;
 }
 
+function normalizeLingerSeconds(v?: string | number | null): number | null {
+  if (v === null || v === undefined || v === "") return null;
+  if (typeof v === "number") return v;
+
+  const t = v.toString().trim().toLowerCase();
+
+  if (t === "0" || t === "0-0") return 0;
+  if (t === "0-5" || t === "1-5") return 5;
+  if (t === "6-10") return 10;
+  if (t === "11-15") return 15;
+  if (t === ">15" || t === "15+" || t === "mas_de_15") return 20;
+
+  const parsed = Number(t);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 // -------------------- Diagnóstico pulpar --------------------
 
 export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags: string[] } {
@@ -174,7 +190,7 @@ export function diagnosePulp(data: CaseData): { diagnosis: PulpDiagnosis; flags:
     .toLowerCase()
     .trim();
 
-  const linger = toNumber(data.lingering_pain_seconds);
+ const linger = normalizeLingerSeconds(data.lingering_pain_seconds);
   const heatPain = isYes(data.pain_to_heat);
   const percPain = isYes(data.percussion_pain_yesno);
   const sinusTract = isYes(data.sinus_tract_present);
@@ -377,37 +393,44 @@ export function diagnoseApical(
   }
 
   // 4. Casos sintomáticos
-  if (percPain || apicalPalp) {
-    // Si el origen es pulpar/endodóntico → SAP
-    if (pulpPulparOrigin) {
-      return {
-        diagnosis: "localized_symptomatic_apical_periodontitis",
-        flags,
-      };
-    }
-
-    // Pulpa sana/hipersensible/inconclusa + dolor mecánico + sin radiolucidez
-    // → apical hypersensitivity
-    if (pulpNonPulparOrigin && !hasApicalRad) {
-      flags.push(
-        "Dolor a la percusión/palpación sin evidencia de origen pulpar: posible apical hypersensitivity de origen no endodóntico."
-      );
-      return {
-        diagnosis: "apical_hypersensitivity",
-        flags,
-      };
-    }
-
-    // Pulpa sana/hipersensible/inconclusa + radiolucidez + síntomas:
-    // cuadro discordante, no asumir SAP automáticamente
-    flags.push(
-      "Discordancia pulpa–ápice: síntomas apicales/radiolucidez con pulpa no claramente patológica. Revisar vitalidad, imagen y causas no endodónticas."
-    );
+if (percPain || apicalPalp) {
+  // Si el origen es pulpar/endodóntico → SAP
+  if (pulpPulparOrigin) {
     return {
-      diagnosis: "inconclusive_apical_condition",
+      diagnosis: "localized_symptomatic_apical_periodontitis",
       flags,
     };
   }
+
+  // Pulpa sana/hipersensible/inconclusa + dolor mecánico + sin radiolucidez
+  // (con o sin leve ensanchamiento del PDL) → apical hypersensitivity
+  if (pulpNonPulparOrigin && !hasApicalRad) {
+    if (pdlWidened) {
+      flags.push(
+        "Dolor a la percusión/palpación con leve ensanchamiento del PDL y sin radiolucidez: compatible con apical hypersensitivity."
+      );
+    } else {
+      flags.push(
+        "Dolor a la percusión/palpación sin evidencia de origen pulpar ni radiolucidez: posible apical hypersensitivity de origen no endodóntico."
+      );
+    }
+
+    return {
+      diagnosis: "apical_hypersensitivity",
+      flags,
+    };
+  }
+
+  // Pulpa sana/hipersensible/inconclusa + radiolucidez + síntomas:
+  // cuadro discordante, no asumir SAP automáticamente
+  flags.push(
+    "Discordancia pulpa–ápice: síntomas apicales/radiolucidez con pulpa no claramente patológica. Revisar vitalidad, imagen y causas no endodónticas."
+  );
+  return {
+    diagnosis: "inconclusive_apical_condition",
+    flags,
+  };
+}
 
   // 5. Casos asintomáticos con radiolucidez
   if (!percPain && !apicalPalp && hasApicalRad) {
@@ -437,16 +460,7 @@ export function diagnoseApical(
     };
   }
 
-  // 7. Apical hypersensitivity tardía:
-  // dolor mecánico leve con PDL ensanchado y sin radiolucidez
-  if ((percPain || apicalPalp) && !hasApicalRad && pdlWidened && pulpNonPulparOrigin) {
-    return {
-      diagnosis: "apical_hypersensitivity",
-      flags,
-    };
-  }
-
-  // 8. Inconclusive
+  // 7. Inconclusive
   return {
     diagnosis: "inconclusive_apical_condition",
     flags,
