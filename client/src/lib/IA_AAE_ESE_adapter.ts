@@ -40,6 +40,7 @@ const TERMINOS_APICALES_ES: Record<ApicalDiagnosis, string> = {
 
 interface DatosClinico {
   dolorEspontaneo: string;
+  tipoDolor?: string;
   respuestaFrio: string;
   lingeringSeg: string;
   percusionDolor: string;
@@ -143,19 +144,20 @@ function convertirDatosAAE_ESE(datos: DatosClinico): CaseData {
   }
 
   return {
-    spontaneous_pain_yesno: datos.dolorEspontaneo === "si" ? "yes" : "no",
-    thermal_cold_response: thermalColdResponse,
-    lingering_pain_seconds: normalizeLingerSeconds(datos.lingeringSeg),
-    percussion_pain_yesno: datos.percusionDolor === "si" ? "yes" : "no",
-    apical_palpation_pain: datos.apicalPalpationPain === "si" ? "yes" : "no",
-    sinus_tract_present: datos.sinusTractPresent === "si" ? "yes" : "no",
-    systemic_involvement: datos.systemicInvolvement === "si" ? "yes" : "no",
-    depth_of_caries: normalizeDepthOfCaries(datos.profundidadCaries),
-    previous_treatment: datos.previousTreatment || "none",
-    periapical_index_pai_1_5: estimatedPAI,
-    radiolucency_yesno: datos.radiolucidezApical === "si" ? "yes" : "no",
-    pdl_widening: pdlWidening,
-  };
+  spontaneous_pain_yesno: datos.dolorEspontaneo === "si" ? "yes" : "no",
+  thermal_cold_response: thermalColdResponse,
+  lingering_pain_seconds: normalizeLingerSeconds(datos.lingeringSeg),
+  percussion_pain_yesno: datos.percusionDolor === "si" ? "yes" : "no",
+  apical_palpation_pain: datos.apicalPalpationPain === "si" ? "yes" : "no",
+  sinus_tract_present: datos.sinusTractPresent === "si" ? "yes" : "no",
+  systemic_involvement: datos.systemicInvolvement === "si" ? "yes" : "no",
+  depth_of_caries: normalizeDepthOfCaries(datos.profundidadCaries),
+  tipo_dolor: datos.tipoDolor || null,
+  previous_treatment: datos.previousTreatment || "none",
+  periapical_index_pai_1_5: estimatedPAI,
+  radiolucency_yesno: datos.radiolucidezApical === "si" ? "yes" : "no",
+  pdl_widening: pdlWidening,
+};
 }
 
 /**
