@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FileCheck, Loader2, AlertCircle, CheckCircle2, Clock, Calendar } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { obtenerPendientes } from "@/lib/api";
+import { getTutorTokenFromEmail } from "@/lib/classifications";
 
 export default function CasosPendientes() {
   const { user, role } = useAuth();
@@ -20,25 +21,36 @@ export default function CasosPendientes() {
     cargarPendientes();
   }, [user, role]);
 
-  async function cargarPendientes() {
-    setCargando(true);
-    setError(null);
-    try {
-      const casos = await obtenerPendientes();
-      
-      if (casos.length > 0) {
-        console.log('📋 Estructura de casos pendientes:', casos[0]);
-        console.log('📋 Total de casos:', casos.length);
-      }
-      
-      setPendientes(casos);
-    } catch (err) {
-      console.error('Error cargando pendientes:', err);
-      setError('No se pudieron cargar los casos pendientes');
-    } finally {
-      setCargando(false);
+ async function cargarPendientes() {
+  setCargando(true);
+  setError(null);
+  try {
+    const token = getTutorTokenFromEmail(user?.email || '');
+
+    if (!token) {
+      throw new Error('Tutor no autorizado');
     }
+
+    const tutorType: 'JEN' | 'SEG' | 'INV' =
+      token.includes('JEN') ? 'JEN' :
+      token.includes('SEG') ? 'SEG' : 'INV';
+
+    const casos = await obtenerPendientes(tutorType);
+
+    if (casos.length > 0) {
+      console.log('📋 Estructura de casos pendientes:', casos[0]);
+      console.log('📋 Total de casos:', casos.length);
+      console.log('👨‍⚕️ Tutor actual:', user?.email, '→', tutorType);
+    }
+
+    setPendientes(casos);
+  } catch (err) {
+    console.error('Error cargando pendientes:', err);
+    setError('No se pudieron cargar los casos pendientes');
+  } finally {
+    setCargando(false);
   }
+}
 
   function handleValidar(caso: any) {
     if (!caso || !caso.case_id) {
