@@ -319,14 +319,30 @@ export function diagnoseApical(
 
   const prev = normalizePreviousTreatment(data.previous_treatment);
   const isPreviouslyTreated =
-    prev === "previously_obturated_rct" || prev === "previous_regenerative";
+    prev === "previously_obturated_rct" ||
+    prev === "previous_regenerative";
 
   const paiBase = toNumber(data.vision_pai_baseline);
   const paiFollow = toNumber(data.vision_pai_followup);
   const diamBase = toNumber(data.vision_lesion_diam_mm_baseline);
   const diamFollow = toNumber(data.vision_lesion_diam_mm_followup);
 
-  // 1. Systemic involvement
+  const pulpPulparOrigin = [
+    "mild_pulpitis",
+    "severe_pulpitis",
+    "pulp_necrosis",
+    "previously_initiated_root_canal_treatment",
+    "previously_obturated_root_canal",
+    "previous_regenerative_endodontic_treatment",
+  ].includes(pulpDiag);
+
+  const pulpNonPulparOrigin = [
+    "clinically_normal_pulp",
+    "hypersensitive_pulp",
+    "inconclusive_pulp_status",
+  ].includes(pulpDiag);
+
+  // 1. Compromiso sistémico
   if (systemic) {
     return {
       diagnosis: "apical_periodontitis_with_systemic_involvement",
@@ -334,7 +350,7 @@ export function diagnoseApical(
     };
   }
 
-  // 2. Sinus tract
+  // 2. Tracto sinusal
   if (sinusTract) {
     return {
       diagnosis: "localized_apical_periodontitis_with_sinus_tract",
@@ -342,84 +358,95 @@ export function diagnoseApical(
     };
   }
 
-  // 3. Symptomatic Apical Periodontitis (SAP)
-  // CLAVE 2025: si hay dolor a la percusión y la pulpa está enferma (necrosis/severe/mild avanzada),
-  // es SAP aunque todavía no se vea radiolucidez clara.
-  const pulpDiseased = [
-    "pulp_necrosis",
-    "severe_pulpitis",
-    "mild_pulpitis",
-    "previously_initiated_root_canal_treatment",
-    "previously_obturated_root_canal",
-  ].includes(pulpDiag);
+  // 3. Healing apical tissue
+  // Debe evaluarse ANTES que AAP, porque un previamente tratado asintomático
+  // con radiolucidez en disminución no es AAP, sino healing.
+  if (
+    isPreviouslyTreated &&
+    !percPain &&
+    !apicalPalp &&
+    (
+      (paiBase > 0 && paiFollow > 0 && paiFollow < paiBase) ||
+      (diamBase > 0 && diamFollow > 0 && diamFollow < diamBase)
+    )
+  ) {
+    return {
+      diagnosis: "healing_apical_tissue",
+      flags,
+    };
+  }
 
+  // 4. Casos sintomáticos
   if (percPain || apicalPalp) {
-    if (hasApicalRad) {
+    // Si el origen es pulpar/endodóntico → SAP
+    if (pulpPulparOrigin) {
       return {
         diagnosis: "localized_symptomatic_apical_periodontitis",
         flags,
       };
     }
 
-    if (pulpDiseased) {
+    // Pulpa sana/hipersensible/inconclusa + dolor mecánico + sin radiolucidez
+    // → apical hypersensitivity
+    if (pulpNonPulparOrigin && !hasApicalRad) {
+      flags.push(
+        "Dolor a la percusión/palpación sin evidencia de origen pulpar: posible apical hypersensitivity de origen no endodóntico."
+      );
       return {
-        diagnosis: "localized_symptomatic_apical_periodontitis",
+        diagnosis: "apical_hypersensitivity",
         flags,
       };
     }
 
-    // Pulpa clínicamente sana/hipersensible + dolor percusión → Apical Hypersensitivity (origen no endodóntico)
+    // Pulpa sana/hipersensible/inconclusa + radiolucidez + síntomas:
+    // cuadro discordante, no asumir SAP automáticamente
     flags.push(
-      "Dolor a la percusión con pulpa sana/hipersensible: posible origen no endodóntico (trauma oclusal, sinusitis, etc.)."
+      "Discordancia pulpa–ápice: síntomas apicales/radiolucidez con pulpa no claramente patológica. Revisar vitalidad, imagen y causas no endodónticas."
     );
     return {
-      diagnosis: "apical_hypersensitivity",
+      diagnosis: "inconclusive_apical_condition",
       flags,
     };
   }
 
-  // 4. Asymptomatic Apical Periodontitis
+  // 5. Casos asintomáticos con radiolucidez
   if (!percPain && !apicalPalp && hasApicalRad) {
+    // Si hay origen pulpar/endodóntico → AAP
+    if (pulpPulparOrigin) {
+      return {
+        diagnosis: "localized_asymptomatic_apical_periodontitis",
+        flags,
+      };
+    }
+
+    // Pulpa normal/hipersensible/inconclusa + radiolucidez → inconclusive
+    flags.push(
+      "Radiolucidez apical sin síntomas y sin origen pulpar claro: considerar inconclusive apical condition."
+    );
     return {
-      diagnosis: "localized_asymptomatic_apical_periodontitis",
+      diagnosis: "inconclusive_apical_condition",
       flags,
     };
   }
 
-  // 5. Healing (disminución de PAI o tamaño de lesión en dientes ya tratados)
-  if (
-    isPreviouslyTreated &&
-    paiBase !== null &&
-    paiFollow !== null &&
-    paiFollow < paiBase
-  ) {
-    return {
-      diagnosis: "healing_apical_tissue",
-      flags,
-    };
-  }
-
-  if (
-    isPreviouslyTreated &&
-    diamBase !== null &&
-    diamFollow !== null &&
-    diamFollow < diamBase
-  ) {
-    return {
-      diagnosis: "healing_apical_tissue",
-      flags,
-    };
-  }
-
-  // 6. Clinically normal apical tissues
-  if (!percPain && !apicalPalp && !hasApicalRad && !pdlWidened && !sinusTract && !systemic) {
+  // 6. Tejidos apicales clínicamente normales
+  if (!percPain && !apicalPalp && !hasApicalRad && !pdlWidened) {
     return {
       diagnosis: "clinically_normal_apical_tissues",
       flags,
     };
   }
 
-  // 7. Inconclusive
+  // 7. Apical hypersensitivity tardía:
+  // dolor mecánico leve con PDL ensanchado y sin radiolucidez
+  if ((percPain || apicalPalp) && !hasApicalRad && pdlWidened && pulpNonPulparOrigin) {
+    return {
+      diagnosis: "apical_hypersensitivity",
+      flags,
+    };
+  }
+
+  // 8. Inconclusive
   return {
     diagnosis: "inconclusive_apical_condition",
     flags,
@@ -436,30 +463,39 @@ export function diagnoseEndoAAE_ESE_2025(data: CaseData): EndoDiagnosis {
 
   // Coherencia pulpa–ápice
   if (
-    (pulp.diagnosis === "clinically_normal_pulp" ||
-      pulp.diagnosis === "hypersensitive_pulp") &&
-    (apical.diagnosis === "localized_symptomatic_apical_periodontitis" ||
+    (
+      pulp.diagnosis === "clinically_normal_pulp" ||
+      pulp.diagnosis === "hypersensitive_pulp" ||
+      pulp.diagnosis === "inconclusive_pulp_status"
+    ) &&
+    (
+      apical.diagnosis === "localized_symptomatic_apical_periodontitis" ||
       apical.diagnosis === "localized_asymptomatic_apical_periodontitis" ||
-      apical.diagnosis === "localized_apical_periodontitis_with_sinus_tract")
+      apical.diagnosis === "localized_apical_periodontitis_with_sinus_tract" ||
+      apical.diagnosis === "apical_periodontitis_with_systemic_involvement"
+    )
   ) {
     flags.push(
-      "Alerta: Tejidos apicales patológicos con pulpa clínicamente normal/hipersensible. Revisar prueba de vitalidad y posibles causas no endodónticas."
+      "Alerta: patología apical de aparente origen endodóntico con pulpa clínicamente normal, hipersensible o inconclusa. Revisar pruebas de vitalidad, calidad de la imagen y posibles causas no endodónticas."
     );
   }
 
   if (
     pulp.diagnosis === "previously_obturated_root_canal" &&
-    (apical.diagnosis === "clinically_normal_apical_tissues" ||
-      apical.diagnosis === "inconclusive_apical_condition")
+    (
+      apical.diagnosis === "clinically_normal_apical_tissues" ||
+      apical.diagnosis === "inconclusive_apical_condition" ||
+      apical.diagnosis === "healing_apical_tissue"
+    )
   ) {
     flags.push(
-      "Diente con endodoncia previa: valorar evolución a largo plazo (control radiográfico)."
+      "Diente con endodoncia previa: interpretar junto con controles radiográficos y evolución temporal para diferenciar normalidad, healing o condición apical inconclusa."
     );
   }
 
   return {
     pulpal: pulp.diagnosis,
     apical: apical.diagnosis,
-    flags: Array.from(new Set(flags)), // sin duplicados
+    flags: Array.from(new Set(flags)),
   };
 }
