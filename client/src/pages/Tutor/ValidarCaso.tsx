@@ -218,42 +218,138 @@ export default function ValidarCaso() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Dolor espontáneo</p>
-                <p className="font-medium">{toNumber(caso.spontaneous_pain_yesno) === 1 ? '✓ Sí' : '✗ No'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Respuesta al frío</p>
-                <p className="font-medium">
-                  {toNumber(caso.thermal_cold_response) === 0 ? 'No responde' : 
-                   toNumber(caso.thermal_cold_response) === 2 ? 'Aumentada' : 'Normal'}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Dolor persistente (seg)</p>
-                <p className="font-medium">{toNumber(caso.lingering_pain_seconds)} seg</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Percusión dolorosa</p>
-                <p className="font-medium">{caso.percussion_pain_yesno === 'yes' ? '✓ Sí' : '✗ No'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Palpación apical dolorosa</p>
-                <p className="font-medium">{caso.apical_palpation_pain === 'si' || caso.apical_palpation_pain === 'yes' ? '✓ Sí' : '✗ No'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Tracto sinusal presente</p>
-                <p className="font-medium">{caso.sinus_tract_present === 'si' || caso.sinus_tract_present === 'yes' ? '✓ Sí' : '✗ No'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Compromiso sistémico</p>
-                <p className="font-medium">{caso.systemic_involvement === 'si' || caso.systemic_involvement === 'yes' ? '✓ Sí' : '✗ No'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Tratamiento previo</p>
-                <p className="font-medium">{caso.previous_treatment === 'si' || caso.previous_treatment === 'yes' ? '✓ Sí' : '✗ No'}</p>
-              </div>
-            </CardContent>
+  <div>
+    <p className="text-sm text-muted-foreground">Dolor espontáneo</p>
+    <p className="font-medium">
+      {caso.spontaneous_pain_yesno === 'yes' || caso.spontaneous_pain_yesno === 1 || caso.spontaneous_pain_yesno === '1'
+        ? '✓ Sí'
+        : '✗ No'}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Tipo de dolor</p>
+    <p className="font-medium">
+      {caso.tipo_dolor === 'sin_dolor' ? 'Sin dolor' :
+       caso.tipo_dolor === 'dolor_provocado_corto' ? 'Dolor provocado corto' :
+       caso.tipo_dolor === 'dolor_provocado_largo' ? 'Dolor provocado largo' :
+       caso.tipo_dolor === 'dolor_espontaneo' ? 'Dolor espontáneo' :
+       caso.tipo_dolor === 'dolor_mal_localizado' ? 'Dolor mal localizado / irradiado' :
+       caso.tipo_dolor === 'no_refiere' ? 'No refiere / no sabe describir' :
+       caso.tipo_dolor || 'N/A'}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Respuesta al frío</p>
+    <p className="font-medium">
+      {caso.thermal_cold_response === 0 || caso.thermal_cold_response === '0'
+        ? 'No responde'
+        : caso.thermal_cold_response === 1 || caso.thermal_cold_response === '1'
+        ? 'Normal'
+        : caso.thermal_cold_response === 2 || caso.thermal_cold_response === '2'
+        ? 'Aumentada'
+        : 'N/A'}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Duración del dolor tras frío</p>
+    <p className="font-medium">{caso.lingering_pain_seconds || 'N/A'}</p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Percusión</p>
+    <p className="font-medium">
+      {caso.percussion_pain_yesno === 'yes' || caso.percussion_pain_yesno === 'si'
+        ? '✓ Dolor'
+        : '✗ No dolor'}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Palpación apical</p>
+    <p className="font-medium">
+      {caso.apical_palpation_pain === 'yes' || caso.apical_palpation_pain === 'si'
+        ? '✓ Dolor'
+        : '✗ No dolor'}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Profundidad de caries</p>
+    <p className="font-medium">{caso.depth_of_caries || 'N/A'}</p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Sondaje máximo</p>
+    <p className="font-medium">
+      {caso.sondaje_max_mm ?? 'N/A'}{caso.sondaje_max_mm != null ? ' mm' : ''}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Sangrado controlable</p>
+    <p className="font-medium">
+      {caso.sangrado_controlable === 'si' || caso.sangrado_controlable === 'yes'
+        ? '✓ Sí'
+        : caso.sangrado_controlable === 'no'
+        ? '✗ No'
+        : caso.sangrado_controlable === 'no_valorable'
+        ? 'No valorable'
+        : 'N/A'}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Cámara abierta</p>
+    <p className="font-medium">
+      {caso.camara_abierta === 'si' || caso.camara_abierta === 'yes'
+        ? '✓ Sí'
+        : caso.camara_abierta === 'no'
+        ? '✗ No'
+        : caso.camara_abierta === 'no_valorable'
+        ? 'No valorable'
+        : 'N/A'}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Pulpa expuesta</p>
+    <p className="font-medium">
+      {caso.pulpa_expuesta === 'si' || caso.pulpa_expuesta === 'yes'
+        ? '✓ Sí'
+        : caso.pulpa_expuesta === 'no'
+        ? '✗ No'
+        : caso.pulpa_expuesta === 'no_valorable'
+        ? 'No valorable'
+        : 'N/A'}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Tratamiento previo</p>
+    <p className="font-medium">{caso.previous_treatment || 'Ninguno'}</p>
+  </div>
+
+  <div>
+    <p className="text-sm text-muted-foreground">Tracto sinusal</p>
+    <p className="font-medium">
+      {caso.sinus_tract_present === 'yes' || caso.sinus_tract_present === 'si'
+        ? '✓ Presente'
+        : '✗ Ausente'}
+    </p>
+  </div>
+              
+  <div>
+    <p className="text-sm text-muted-foreground">Afectación sistémica</p>
+    <p className="font-medium">
+      {caso.systemic_involvement === 'yes' || caso.systemic_involvement === 'si'
+        ? '✓ Sí'
+        : '✗ No'}
+    </p>
+  </div>
+</CardContent>
           </Card>
 
           <Card>
@@ -267,7 +363,7 @@ export default function ValidarCaso() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">PAI (1-5)</p>
-                <p className="font-medium">{caso.periapical_index_PAI_1_5 || 'N/A'}</p>
+               <p className="font-medium">{caso.periapical_index_PAI_1_5 ?? 'N/A'}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Ensanchamiento PDL</p>
