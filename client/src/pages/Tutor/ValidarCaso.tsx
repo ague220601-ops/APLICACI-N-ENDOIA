@@ -351,38 +351,43 @@ export default function ValidarCaso() {
   </div>
 </CardContent>
           </Card>
+<Card>
+  <CardHeader>
+    <CardTitle>Hallazgos Radiográficos</CardTitle>
+  </CardHeader>
+  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Hallazgos Radiográficos</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Radiolucidez apical</p>
-                <p className="font-medium">{toNumber(caso.radiolucency_yesno) === 1 ? '✓ Sí' : '✗ No'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">PAI (1-5)</p>
-               <p className="font-medium">{caso.periapical_index_PAI_1_5 ?? 'N/A'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Ensanchamiento PDL</p>
-                <p className="font-medium">{caso.pdl_widening || 'N/A'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Profundidad de caries</p>
-                <p className="font-medium capitalize">{caso.depth_of_caries || 'N/A'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Sondaje máximo (mm)</p>
-                <p className="font-medium">{caso.probing_max_depth_mm || 'N/A'} mm</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Control de sangrado</p>
-                <p className="font-medium">{caso.bleeding_control_possible === 'yes' ? '✓ Sí' : '✗ No'}</p>
-              </div>
-            </CardContent>
-          </Card>
+    <div>
+      <p className="text-sm text-muted-foreground">Radiolucidez apical</p>
+      <p className="font-medium">
+        {toNumber(caso.radiolucency_yesno) === 1 ? '✓ Sí' : '✗ No'}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-muted-foreground">Profundidad de caries</p>
+      <p className="font-medium capitalize">
+        {caso.depth_of_caries || 'N/A'}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-muted-foreground">Sondaje máximo (mm)</p>
+      <p className="font-medium">
+        {caso.probing_max_depth_mm || 'N/A'} mm
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-muted-foreground">Control de sangrado</p>
+      <p className="font-medium">
+        {caso.bleeding_control_possible === 'yes' ? '✓ Sí' : '✗ No'}
+      </p>
+    </div>
+
+  </CardContent>
+</Card>
+          
 
          {/* BLOQUE DE IA RADIOLÓGICA */}
 {role === 'investigador' && (
